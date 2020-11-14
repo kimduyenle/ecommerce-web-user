@@ -1,13 +1,11 @@
-import Home from 'pages/Home'
+import React from 'react';
 import About from 'pages/About'
-import Login from 'pages/Login'
-import Register from 'pages/Register'
 import withLayout from 'components/hocs/withLayout'
 
 const routes = {
   home: {
     path: '/',
-    component: withLayout(Home),
+    component: withLayout(React.lazy(() => import('pages/Home'))),
     exact: true
   },
   about: {
@@ -17,12 +15,32 @@ const routes = {
   },
   login: {
     path: '/login',
-    component: Login,
+    component: withLayout(React.lazy(() => import('pages/Login'))),
     exact: true
   },
   register: {
     path: '/register',
-    component: withLayout(Register),
+    component: withLayout(React.lazy(() => import('pages/Register'))),
+    exact: true
+  },
+  'product-detail': {
+    path: '/product-detail',
+    component: withLayout(React.lazy(() => import('pages/ProductDetail'))),
+    exact: true
+  },
+  cart: {
+    path: '/cart',
+    component: withLayout(React.lazy(() => import('pages/Cart'))),
+    exact: true
+  },
+  checkout: {
+    path: '/checkout',
+    component: withLayout(React.lazy(() => import('pages/Checkout'))),
+    exact: true
+  },
+  shop: {
+    path: '/shop',
+    component: withLayout(React.lazy(() => import('pages/Shop'))),
     exact: true
   }
 }
