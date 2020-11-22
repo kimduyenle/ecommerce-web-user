@@ -1,9 +1,23 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-// import img from 'assets/images/img-pro-01.jpg';
+import useNotification from 'utils/hooks/notification';
+import cartDetailAPI from 'api/cartDetail';
+import cartAPI from 'api/cart';
+// import { useDispatch } from 'react-redux';
+import { getByUser } from 'features/cartSlice';
 
-const Product = ({ id, name, price, image }) => {
+const Product = ({
+	id,
+	name,
+	price,
+	image,
+	cartId,
+	isAuthenticated,
+	fetchCart
+}) => {
 	const history = useHistory();
+	const { showError, showSuccess } = useNotification();
+	// const dispatch = useDispatch();
 	return (
 		<div className='products-single fix'>
 			<div className='box-img-hover'>
@@ -51,9 +65,30 @@ const Product = ({ id, name, price, image }) => {
 							</a>
 						</li>
 					</ul>
-					<a className='cart' href='/'>
+					<button
+						className='cart'
+						onClick={async () => {
+							if (!isAuthenticated) {
+								showError('Please login to continue.');
+								return;
+							}
+							try {
+								const quantity = 1;
+								const response = await cartDetailAPI.add({
+									productId: id,
+									cartId,
+									quantity,
+									price
+								});
+								await fetchCart();
+								showSuccess('Added successfully.');
+							} catch (error) {
+								showError('Failed to add to cart.');
+							}
+						}}
+					>
 						Add to Cart
-					</a>
+					</button>
 				</div>
 			</div>
 			<div className='why-text'>

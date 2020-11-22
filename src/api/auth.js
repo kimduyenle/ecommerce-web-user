@@ -1,27 +1,27 @@
-import apiClient from "./apiClient";
+import apiClient from './apiClient';
 
 // const url = "/user_registration";
 
-const signup = ({ email, username, password1, password2 }) => {
-  const formData = new FormData();
-  formData.append("email", email);
-  formData.append("username", username);
-  formData.append("password1", password1);
-  formData.append("password2", password2);
-  return apiClient.post(`/users/`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+const signup = ({ username, email, password }) => {
+	// const formData = new FormData();
+	// formData.append('username', username);
+	// formData.append('email', email);
+	// formData.append('password', password);
+	// return apiClient.post(`/users/`, formData, {
+	// 	headers: {
+	// 		'Content-Type': 'multipart/form-data'
+	// 	}
+	// });
+	return apiClient.post(`/users`, { username, email, password });
 };
 
 const signin = ({ username, password }) => {
-  return apiClient.post(`/auth/login/`, { username, password });
+	return apiClient.post(`/auth/login/`, { username, password });
 };
 
 const getAllUsers = () => {
-  return apiClient.get(`/users/`);
-}
+	return apiClient.get(`/users/`);
+};
 
 // const activate = (key) => {
 //   return apiClient.get(`${url}/activation/`, { params: { key } });
@@ -48,12 +48,12 @@ const getAllUsers = () => {
 // };
 
 const authAPI = {
-  signup,
-  signin,
-  // activate,
-  // changePassword,
-  // resetPassword,
-  // confirmResetPassword,
+	signup,
+	signin
+	// activate,
+	// changePassword,
+	// resetPassword,
+	// confirmResetPassword,
 };
 
 export default authAPI;

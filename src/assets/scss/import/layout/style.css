@@ -180,7 +180,7 @@ p {
 /*------------------------------------------------------------------ HEADER -------------------------------------------------------------------*/
 .main-top {
 	background: #010101;
-	padding: 10px 0px;
+	padding: 6px 0px;
 }
 .custom-select-box {
 	float: right;
@@ -263,6 +263,41 @@ p {
 .our-link {
 	float: right;
 }
+.our-link ul li.avatar img {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+}
+.our-link ul li.username {
+	color: white;
+	font-weight: 600;
+}
+.our-link ul li.account-menu ul {
+	position: absolute;
+	top: 47px;
+	right: 35px;
+	z-index: 9999;
+	padding: 6px 0;
+	background-color: #d33b33;
+	border-radius: 0 0 4px 4px;
+}
+.our-link ul li.account-menu ul li {
+	display: block;
+	border-right: none;
+	padding: 0;
+}
+.our-link ul li.account-menu ul li a {
+	text-transform: capitalize;
+	display: block;
+	font-weight: 600;
+	padding: 10px 16px;
+	background-color: #d33b33;
+	transition: all 0.3s ease-in-out;
+}
+.our-link ul li.account-menu ul li a:hover {
+	color: white;
+	background-color: #010101;
+}
 .our-link ul li {
 	display: inline-block;
 	border-right: 1px solid #ffffff;
@@ -270,7 +305,7 @@ p {
 	line-height: 14px;
 }
 .our-link ul {
-	line-height: 30px;
+	line-height: 40px;
 }
 .our-link ul li a {
 	color: #ffffff;
@@ -278,7 +313,17 @@ p {
 	text-transform: uppercase;
 	font-size: 14px;
 }
-.our-link ul li a:hover {
+.our-link ul li button {
+	color: #ffffff;
+	font-weight: 700;
+	text-transform: uppercase;
+	font-size: 14px;
+	background-color: transparent;
+	border: none;
+	padding: 0;
+}
+.our-link ul li a:hover,
+.our-link ul li button:hover {
 	color: #d33b33;
 }
 .our-link ul li:last-child {
@@ -289,7 +334,8 @@ p {
 .search a {
 	color: #d33b33;
 }
-.attr-nav > ul > li > a:hover {
+.attr-nav > ul > li > a:hover,
+.attr-nav > ul > li > button:hover {
 	color: #d33b33;
 }
 nav.navbar.bootsnav ul.nav > li > a {
@@ -299,6 +345,11 @@ nav.navbar.bootsnav ul.nav > li > a {
 /* Navbar Atribute ------*/
 .attr-nav > ul > li > a {
 	padding: 28px 15px;
+}
+.attr-nav > ul > li > button {
+	padding: 28px 15px;
+	background-color: transparent;
+	border: none;
 }
 ul.cart-list > li.total > .btn {
 	border-bottom: solid 1px #cfcfcf !important;
@@ -383,7 +434,8 @@ ul.cart-list > li.total > .btn {
 	nav.navbar .navbar-brand img.logo {
 		width: 160px;
 	}
-	.attr-nav > ul > li > a {
+	.attr-nav > ul > li > a,
+	.attr-nav > ul > li > button {
 		padding: 16px 15px 15px;
 	}
 	/* Navbar Mobile slide ------*/
@@ -449,7 +501,8 @@ nav.navbar.navbar-inverse .form-control {
 	border-color: #303030;
 	color: #fff;
 }
-nav.navbar.navbar-inverse .attr-nav > ul > li > a {
+nav.navbar.navbar-inverse .attr-nav > ul > li > a,
+nav.navbar.navbar-inverse .attr-nav > ul > li > button {
 	color: #eee;
 }
 nav.navbar.navbar-inverse .attr-nav > ul > li.dropdown ul.dropdown-menu {
@@ -946,6 +999,14 @@ ul.cart-list > li.total > .btn:hover {
 	padding: 5px 10px;
 	display: block;
 }
+.mask-icon ul li button {
+	color: #ffffff;
+	padding: 5px 10px;
+	display: block;
+	border: none;
+	background-color: transparent;
+	transition: all 0.3s ease-in-out;
+}
 .mask-icon a.cart {
 	background: #d33b33;
 	position: absolute;
@@ -959,7 +1020,23 @@ ul.cart-list > li.total > .btn:hover {
 	background: #010101;
 	color: #ffffff;
 }
-.mask-icon ul li a:hover {
+.mask-icon button.cart {
+	background: #d33b33;
+	position: absolute;
+	bottom: 0;
+	right: 0px;
+	padding: 10px 20px;
+	font-weight: 700;
+	color: #ffffff;
+	border: none;
+	transition: all 0.3s ease-in-out;
+}
+.mask-icon button.cart:hover {
+	background: #010101;
+	color: #ffffff;
+}
+.mask-icon ul li a:hover,
+.mask-icon ul li button:hover {
 	background: #010101;
 	color: #ffffff;
 }
@@ -1942,6 +2019,13 @@ ul.cart-list > li.total > .btn:hover {
 }
 .remove-pr {
 	text-align: center;
+}
+.remove-pr .btn-remove:focus {
+	box-shadow: none;
+	color: #0056b3;
+}
+.remove-pr .btn-remove:hover {
+	color: #0056b3;
 }
 .coupon-box .input-group .form-control {
 	min-height: 50px;

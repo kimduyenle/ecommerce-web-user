@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Product from 'components/product';
 import productAPI from 'api/product';
+import { useDispatch, useSelector } from 'react-redux';
+import { getByUser } from 'features/cartSlice';
+import { localAuthenticate } from 'utils/localAuth';
+import useNotification from 'utils/hooks/notification';
 
 const ProductList = () => {
+	const { isAuthenticated } = localAuthenticate();
 	const [products, setProducts] = useState([]);
+	// const [cartId, setCartId] = useState('');
+	const { cart } = useSelector(state => state.cart);
+	const cartId = cart.id;
+	const { showError, showSuccess } = useNotification();
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		fetchProducts();
@@ -21,6 +31,16 @@ const ProductList = () => {
 			console.log('Failed to fetch products: ', error);
 		}
 	};
+
+	const fetchCart = () => {
+		dispatch(getByUser());
+	};
+
+	// useEffect(() => {
+	// 	if (isAuthenticated) {
+	// 		fetchCart();
+	// 	}
+	// }, [dispatch, isAuthenticated]);
 
 	return (
 		<div className='products-box'>
@@ -40,6 +60,9 @@ const ProductList = () => {
 										? product.images[0].path
 										: 'https://picsum.photos/400'
 								}
+								cartId={cartId}
+								isAuthenticated={isAuthenticated}
+								fetchCart={fetchCart}
 							/>
 						</div>
 					))}

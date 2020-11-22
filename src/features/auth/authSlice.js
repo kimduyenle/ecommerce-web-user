@@ -8,9 +8,9 @@ import {
 
 export const signup = createAsyncThunk(
 	'auth/signup',
-	({ email, username, password1, password2, onComplete }) => {
+	({ username, email, password, onComplete }) => {
 		return API.auth
-			.signup({ email, username, password1, password2 })
+			.signup({ username, email, password })
 			.then(({ data }) => {
 				onComplete(null, data);
 				return data;
@@ -55,6 +55,12 @@ export const signin = createAsyncThunk(
 			});
 	}
 );
+
+// export const signout = createAsyncThunk(
+// 	'auth/signout', () => {
+// 		removeAccessToken();
+// 	}
+// )
 
 export const changePassword = createAsyncThunk(
 	'auth/password-change',

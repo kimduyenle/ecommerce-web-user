@@ -2,15 +2,23 @@ import React from 'react';
 import * as Yup from 'yup';
 import { Formik, Form, Field } from 'formik';
 import NumberInput from 'components/inputs/NumberInput';
+import useNotification from 'utils/hooks/notification';
+import cartDetailAPI from 'api/cartDetail';
 
 const ProductDetail = ({
+	id,
 	name,
 	price,
 	description,
 	images,
 	quantity,
-	sold
+	sold,
+	cartId,
+	isAuthenticated,
+	fetchCart
 }) => {
+	const { showError, showSuccess } = useNotification();
+
 	return (
 		<div className='shop-detail-box-main'>
 			<div className='container'>
@@ -44,15 +52,6 @@ const ProductDetail = ({
 										/>{' '}
 									</div>
 								))}
-
-								{/* <div className='carousel-item'>
-									{' '}
-									<img
-										className='d-block w-100'
-										src={pro3}
-										alt='Third slide'
-									/>{' '}
-								</div> */}
 							</div>
 							<a
 								className='carousel-control-prev'
@@ -101,12 +100,6 @@ const ProductDetail = ({
 										/>
 									</li>
 								))}
-								{/* <li data-target='#carousel-example-1' data-slide-to='1'>
-									<img className='d-block w-100 img-fluid' src={view2} alt='' />
-								</li>
-								<li data-target='#carousel-example-1' data-slide-to='2'>
-									<img className='d-block w-100 img-fluid' src={view3} alt='' />
-								</li> */}
 							</ol>
 						</div>
 					</div>
@@ -120,24 +113,23 @@ const ProductDetail = ({
 								validationSchema={Yup.object().shape({
 									quantity: Yup.number().required('Quantity is required')
 								})}
-								onSubmit={({ quantity }, { setSubmitting }) => {
-									// dispatch(
-									// 	signin({
-									// 		username,
-									// 		password,
-									// 		onComplete: (error, data) => {
-									// 			setSubmitting(false);
-									// 			if (!error) {
-									// 				// handle login success
-									// 				history.push(routes['dashboard'].path);
-									// 				return;
-									// 			}
-									// 			const errorMessages = Object.values(error).join('. ');
-									// 			return showError(errorMessages);
-									// 		}
-									// 	})
-									// );
-									console.log(quantity);
+								onSubmit={async ({ quantity }, { setSubmitting }) => {
+									if (!isAuthenticated) {
+										showError('Please login to continue.');
+										return;
+									}
+									try {
+										const response = await cartDetailAPI.add({
+											productId: id,
+											cartId,
+											quantity,
+											price
+										});
+										await fetchCart();
+										showSuccess('Added successfully.');
+									} catch (error) {
+										showError('Failed to add to cart.');
+									}
 								}}
 							>
 								{({ isSubmitting }) => (
@@ -157,41 +149,14 @@ const ProductDetail = ({
 										<h4>Description:</h4>
 										<p>{description}</p>
 										<ul>
-											{/* <li>
-                                        <div className="form-group size-st">
-                                            <label className="size-label">Size</label>
-                                            <select id="basic" className="selectpicker show-tick form-control">
-									<option value="0">Size</option>
-									<option value="0">S</option>
-									<option value="1">M</option>
-									<option value="1">L</option>
-									<option value="1">XL</option>
-									<option value="1">XXL</option>
-									<option value="1">3XL</option>
-									<option value="1">4XL</option>
-								</select>
-                                        </div>
-                                    </li> */}
 											<li>
 												<div className='form-group quantity-box'>
 													<label className='control-label'>Quantity</label>
-													{/* <input
-														class='form-control'
-														value='0'
-														min='0'
-														max='20'
-														type='number'
-													/> */}
 													<Field
-														// label="Username"
 														className='form-control'
 														min='1'
-														// value='1'
-														// margin='normal'
 														name='quantity'
 														component={NumberInput}
-														// fullWidth
-														// variant='outlined'
 													/>
 												</div>
 											</li>
@@ -206,12 +171,7 @@ const ProductDetail = ({
 												>
 													Buy New
 												</a>
-												<button
-													className='btn hvr-hover'
-													// data-fancybox-close=''
-													// href='/'
-													type='submit'
-												>
+												<button className='btn hvr-hover' type='submit'>
 													Add to cart
 												</button>
 											</div>

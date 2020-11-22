@@ -1,98 +1,70 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation, NavLink } from 'react-router-dom';
 import { bool } from 'prop-types';
+import { Menu, MenuItem, Button } from '@material-ui/core';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import logo from 'assets/images/logo.png';
-import itemOne from 'assets/images/img-pro-01.jpg';
-import itemTwo from 'assets/images/img-pro-02.jpg';
-import itemThree from 'assets/images/img-pro-03.jpg';
-
-// const NavMenuDropdown = ({ open = true }) => {
-//   if (!open) {
-//     return null
-//   }
-//   return (
-//     <div className="nav_menu__dropdown animate__animated animated_bounceInDownOrigin absolute right-0 z-1 inline-block text-left">
-//       <div className="bg-purple-barney origin-top-right right-0 mt-2 w-56 rounded-md shadow-lg">
-//         <div className="rounded-md shadow-xs pt-24">
-//           <div
-//             className="py-1"
-//             role="menu"
-//             aria-orientation="vertical"
-//             aria-labelledby="options-menu"
-//           >
-//             <a
-//               href="/"
-//               className="block px-4 py-2 text-sm leading-5 text-primary hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
-//               role="menuitem"
-//             >
-//               Account settings
-//             </a>
-//             <a
-//               href="/"
-//               className="block px-4 py-2 text-sm leading-5 text-primary hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
-//               role="menuitem"
-//             >
-//               Support
-//             </a>
-//             <a
-//               href="/"
-//               className="block px-4 py-2 text-sm leading-5 text-primary hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:bg-gray-100 focus:text-gray-900"
-//               role="menuitem"
-//             >
-//               License
-//             </a>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
+import { localAuthenticate } from 'utils/localAuth';
+import { useDispatch, useSelector } from 'react-redux';
+import { getByUser } from 'features/cartSlice';
+import { getProfile } from 'features/userSlice';
+import calTotal from 'utils/calTotal';
 
 const Header = () => {
-	// const [navMenuOpen, setNavMenu] = useState(false)
-	// const toggleNavMenu = useCallback(() => {
-	//   setNavMenu(pre => !pre)
-	// }, [])
+	const [accountMenuOpen, setAccountMenu] = useState(false);
+	const toggleAccountMenu = e => {
+		e.stopPropagation();
+		setAccountMenu(pre => !pre);
+	};
+	const handleCloseAccountMenu = () => {
+		setAccountMenu(false);
+	};
+	const { cart } = useSelector(state => state.cart);
+	const { user } = useSelector(state => state.user);
+	const pathname = useLocation().pathname;
 
 	const history = useHistory();
+	const { isAuthenticated, tokenInfo } = localAuthenticate();
+	// const [cart, setCart] = useState({
+	// 	user: { username: '' },
+	// 	cartDetails: []
+	// });
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		// fetchCart();
+		if (isAuthenticated) {
+			dispatch(getByUser());
+			dispatch(getProfile());
+		}
+	}, [dispatch, isAuthenticated]);
+
+	// const fetchCart = async () => {
+	// 	try {
+	// 		const response = await cartAPI.getByUser();
+	// 		const fetchedCart = response.data.cart;
+	// 		setCart({
+	// 			username: fetchedCart.user.username,
+	// 			cartDetails: fetchedCart.cartDetails
+	// 		});
+	// 	} catch (error) {
+	// 		console.log('Failed to fetch cart: ', error);
+	// 	}
+	// };
+
+	useEffect(() => {
+		if (accountMenuOpen) {
+			window.addEventListener('click', handleCloseAccountMenu);
+			return () => window.removeEventListener('click', handleCloseAccountMenu);
+		}
+	}, [accountMenuOpen]);
 
 	return (
 		<div>
 			<div className='main-top'>
 				<div className='container-fluid'>
 					<div className='row'>
-						<div className='col-lg-6 col-md-6 col-sm-12 col-xs-12'>
-							{/* <div className="text-slid-box">
-                        <div id="offer-box" className="carouselTicker">
-                            <ul className="offer-box">
-                                <li>
-                                    <i className="fab fa-opencart"></i> Off 10%! Shop Now Man
-                                </li>
-                                <li>
-                                    <i className="fab fa-opencart"></i> 50% - 80% off on Fashion
-                                </li>
-                                <li>
-                                    <i className="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT20
-                                </li>
-                                <li>
-                                    <i className="fab fa-opencart"></i> Off 50%! Shop Now
-                                </li>
-                                <li>
-                                    <i className="fab fa-opencart"></i> Off 10%! Shop Now Man
-                                </li>
-                                <li>
-                                    <i className="fab fa-opencart"></i> 50% - 80% off on Fashion
-                                </li>
-                                <li>
-                                    <i className="fab fa-opencart"></i> 20% off Entire Purchase Promo code: offT20
-                                </li>
-                                <li>
-                                    <i className="fab fa-opencart"></i> Off 50%! Shop Now
-                                </li>
-                            </ul>
-                        </div>
-                    </div> */}
-						</div>
+						<div className='col-lg-6 col-md-6 col-sm-12 col-xs-12'></div>
 						<div className='col-lg-6 col-md-6 col-sm-12 col-xs-12'>
 							{/* <div className="custom-select-box">
                         <select id="basic" className="selectpicker show-tick form-control" data-placeholder="$ USD">
@@ -103,9 +75,57 @@ const Header = () => {
                     </div> */}
 							<div className='our-link'>
 								<ul>
-									<li>
-										<a href='/'>My Account</a>
-									</li>
+									{isAuthenticated ? (
+										<>
+											<li className='username'>{user.username}</li>
+											<li className='avatar' style={{ borderRight: 'none' }}>
+												<NavLink to='/profile'>
+													<img src={user.avatar} alt='' />
+												</NavLink>
+											</li>
+											<li className='account-menu'>
+												<button onClick={toggleAccountMenu}>
+													<MoreVertIcon />
+												</button>
+												{accountMenuOpen && (
+													<ul>
+														<li>
+															<NavLink to='/profile'>Profile</NavLink>
+														</li>
+														<li>
+															<NavLink to='/my-product'>My product</NavLink>
+														</li>
+														<li>
+															<NavLink to='/logout'>Logout</NavLink>
+														</li>
+													</ul>
+												)}
+											</li>
+										</>
+									) : (
+										<>
+											<li>
+												<button
+													onClick={() => {
+														history.push('/login');
+													}}
+													className='btn'
+												>
+													Login
+												</button>
+											</li>
+											<li>
+												<button
+													onClick={() => {
+														history.push('/register');
+													}}
+													className='btn'
+												>
+													Register
+												</button>
+											</li>
+										</>
+									)}
 								</ul>
 							</div>
 						</div>
@@ -285,12 +305,14 @@ const Header = () => {
 										<i className='fa fa-search'></i>
 									</a>
 								</li>
-								<li className='side-menu'>
-									<a href='/'>
-										<i className='fa fa-shopping-bag'></i>
-										<span className='badge'>3</span>
-									</a>
-								</li>
+								{isAuthenticated && (
+									<li className='side-menu'>
+										<a href={pathname}>
+											<i className='fa fa-shopping-bag'></i>
+											<span className='badge'>{cart.cartDetails?.length}</span>
+										</a>
+									</li>
+								)}
 							</ul>
 						</div>
 					</div>
@@ -300,52 +322,33 @@ const Header = () => {
 						</a>
 						<li className='cart-box'>
 							<ul className='cart-list'>
-								<li>
-									<a href='/' className='photo'>
-										<img src={itemOne} className='cart-thumb' alt='' />
-									</a>
-									<h6>
-										<a href='/'>Delica omtantur </a>
-									</h6>
-									<p>
-										1x - <span className='price'>$80.00</span>
-									</p>
-								</li>
-								<li>
-									<a href='/' className='photo'>
-										<img src={itemTwo} className='cart-thumb' alt='' />
-									</a>
-									<h6>
-										<a href='/'>Omnes ocurreret</a>
-									</h6>
-									<p>
-										1x - <span className='price'>$60.00</span>
-									</p>
-								</li>
-								<li>
-									<a href='/' className='photo'>
-										<img src={itemThree} className='cart-thumb' alt='' />
-									</a>
-									<h6>
-										<a href='/'>Agam facilisis</a>
-									</h6>
-									<p>
-										1x - <span className='price'>$40.00</span>
-									</p>
-								</li>
+								{cart.cartDetails?.map((detail, index) => (
+									<li key={index}>
+										<a href='/' className='photo'>
+											<img
+												src={detail.product.images[0].path}
+												className='cart-thumb'
+												alt=''
+											/>
+										</a>
+										<h6>
+											<a href='/'>{detail.product.name}</a>
+										</h6>
+										<p>
+											{detail.quantity}x -{' '}
+											<span className='price'>{detail.price}</span>
+										</p>
+									</li>
+								))}
 								<li className='total'>
-									<a
-										onClick={e => {
-											e.preventDefault();
-											history.push('/cart');
-										}}
-										href='/cart'
+									<NavLink
 										className='btn btn-default hvr-hover btn-cart'
+										to='/cart'
 									>
 										VIEW CART
-									</a>
+									</NavLink>
 									<span className='float-right'>
-										<strong>Total</strong>: $180.00
+										<strong>Total</strong>: {calTotal(cart.cartDetails)}
 									</span>
 								</li>
 							</ul>

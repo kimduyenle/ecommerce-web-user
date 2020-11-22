@@ -1,8 +1,7 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const TitleBox = ({ parent, children, path }) => {
-	const history = useHistory();
 	return (
 		<div className='all-title-box'>
 			<div className='container'>
@@ -11,15 +10,7 @@ const TitleBox = ({ parent, children, path }) => {
 						<h2>{children}</h2>
 						<ul className='breadcrumb'>
 							<li className='breadcrumb-item'>
-								<a
-									onClick={e => {
-										e.preventDefault();
-										history.push(path);
-									}}
-									href={path}
-								>
-									{parent}
-								</a>
+								<NavLink to={path}>{parent}</NavLink>
 							</li>
 							<li className='breadcrumb-item active'>{children} </li>
 						</ul>
