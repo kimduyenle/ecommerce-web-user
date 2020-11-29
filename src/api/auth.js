@@ -27,13 +27,13 @@ const getAllUsers = () => {
 //   return apiClient.get(`${url}/activation/`, { params: { key } });
 // };
 
-// const changePassword = ({ old_password, new_password1, new_password2 }) => {
-//   return apiClient.put(`${url}/password-change/`, {
-//     old_password,
-//     new_password1,
-//     new_password2,
-//   });
-// };
+const changePassword = ({ oldPassword, newPassword, confirmPassword, id }) => {
+	return apiClient.put(`/users/${id}/password`, {
+		oldPassword,
+		newPassword,
+		confirmPassword
+	});
+};
 
 // const resetPassword = ({ email }) => {
 //   return apiClient.post(`${url}/password-reset/`, { email });
@@ -49,9 +49,9 @@ const getAllUsers = () => {
 
 const authAPI = {
 	signup,
-	signin
+	signin,
 	// activate,
-	// changePassword,
+	changePassword
 	// resetPassword,
 	// confirmResetPassword,
 };

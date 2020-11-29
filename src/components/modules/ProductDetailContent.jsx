@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import qs from 'qs';
 import productAPI from 'api/product';
+import reviewAPI from 'api/review';
 import { useDispatch, useSelector } from 'react-redux';
 import { getByUser } from 'features/cartSlice';
 import { localAuthenticate } from 'utils/localAuth';
@@ -17,9 +18,12 @@ const ProductDetailContent = () => {
 		price: 0,
 		description: '',
 		images: [],
+		user: {},
+		category: '',
 		quantity: 0,
 		sold: 0
 	});
+	const [reviews, setReviews] = useState([]);
 	const { isAuthenticated } = localAuthenticate();
 	// const [cartId, setCartId] = useState('');
 	const { cart } = useSelector(state => state.cart);
@@ -39,6 +43,8 @@ const ProductDetailContent = () => {
 				price: fetchedProduct.price,
 				description: fetchedProduct.description,
 				images: fetchedProduct.images,
+				user: fetchedProduct.user,
+				category: fetchedProduct.category.name,
 				quantity: fetchedProduct.quantity,
 				sold: fetchedProduct.orderDetails.length
 			});
@@ -67,6 +73,20 @@ const ProductDetailContent = () => {
 		// 	console.log('Failed to fetch cart: ', error);
 		// }
 	};
+
+	const fetchReview = async productId => {
+		try {
+			// const params = {
+			//   _page: 1,
+			//   _limit: 10,
+			// };
+			const response = await reviewAPI.getByProduct(productId);
+			setReviews(response.data.reviews);
+		} catch (error) {
+			console.log('Failed to fetch reviews: ', error);
+		}
+	};
+
 	useEffect(() => {
 		fetchProduct(id);
 	}, [id]);
@@ -77,6 +97,10 @@ const ProductDetailContent = () => {
 		}
 	}, [isAuthenticated, dispatch]);
 
+	useEffect(() => {
+		fetchReview(id);
+	}, [id]);
+
 	return (
 		<div>
 			<TitleBox parent='Home' children='Product Detail' path='/' />
@@ -85,6 +109,7 @@ const ProductDetailContent = () => {
 				cartId={cart.id}
 				isAuthenticated={isAuthenticated}
 				fetchCart={fetchCart}
+				reviews={reviews}
 			/>
 		</div>
 	);

@@ -4,6 +4,7 @@ import { Formik, Form, Field } from 'formik';
 import NumberInput from 'components/inputs/NumberInput';
 import useNotification from 'utils/hooks/notification';
 import cartDetailAPI from 'api/cartDetail';
+import ReviewList from '../reviewList';
 
 const ProductDetail = ({
 	id,
@@ -11,11 +12,14 @@ const ProductDetail = ({
 	price,
 	description,
 	images,
+	user,
+	category,
 	quantity,
 	sold,
 	cartId,
 	isAuthenticated,
-	fetchCart
+	fetchCart,
+	reviews
 }) => {
 	const { showError, showSuccess } = useNotification();
 
@@ -213,7 +217,26 @@ const ProductDetail = ({
 									</Form>
 								)}
 							</Formik>
+							<div className='shop-info'>Thông tin cửa hàng:</div>
+							<div className='owner'>
+								<div className='avatar'>
+									<img src={user.avatar} alt='' />
+								</div>
+								<div className='info'>
+									<div>{user.username}</div>
+									<div>{user.address}</div>
+									<div>{user.phoneNumber}</div>
+									<div>{user.email}</div>
+								</div>
+							</div>
 						</div>
+					</div>
+				</div>
+
+				<div className='row my-5'>
+					<div className='col-12'>
+						<div className='review-title'>Đánh giá sản phẩm:</div>
+						<ReviewList reviews={reviews} />
 					</div>
 				</div>
 

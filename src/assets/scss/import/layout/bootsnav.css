@@ -232,6 +232,8 @@ li.close-full-menu {
 	width: 15px;
 	height: 15px;
 	padding-top: 2px;
+	color: #010101;
+	background-color: transparent;
 }
 
 .attr-nav > ul > li.dropdown ul.dropdown-menu {

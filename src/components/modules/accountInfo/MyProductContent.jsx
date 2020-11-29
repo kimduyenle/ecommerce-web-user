@@ -7,6 +7,7 @@ import { localAuthenticate } from 'utils/localAuth';
 import useNotification from 'utils/hooks/notification';
 import clsx from 'clsx';
 import productAPI from 'api/product';
+import CPagination from 'components/cPagination';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -22,15 +23,35 @@ const MyProductContent = () => {
 	const [products, setProducts] = useState([]);
 	const { isAuthenticated, tokenInfo } = localAuthenticate();
 	const { showSuccess, showError } = useNotification();
+	const [activePage, setActivePage] = useState(1);
+	const [pagination, setPagination] = useState({
+		activePage: 1,
+		itemsCountPerPage: 0,
+		totalItemsCount: 0
+	});
+
+	const handlePageChange = pageNumber => {
+		console.log(`active page is ${pageNumber}`);
+		setPagination({
+			...pagination,
+			activePage: pageNumber
+		});
+	};
 
 	const fetchProduct = async () => {
 		try {
-			// const params = {
-			//   _page: 1,
-			//   _limit: 10,
-			// };
-			const response = await productAPI.getByUser();
-			setProducts(response.data.products);
+			const params = {
+				page: pagination.activePage,
+				limit: 3
+			};
+			const response = await productAPI.getByUser({ params: params });
+			setProducts(response.data.dataInPage);
+			setPagination({
+				...pagination,
+				itemsCountPerPage: params.limit,
+				totalItemsCount: response.data.total
+			});
+			console.log('product', products);
 		} catch (error) {
 			console.log('Failed to fetch products: ', error);
 		}
@@ -38,7 +59,7 @@ const MyProductContent = () => {
 
 	useEffect(() => {
 		fetchProduct();
-	}, []);
+	}, [pagination.activePage]);
 
 	const handleDeleteProduct = async id => {
 		try {
@@ -68,6 +89,12 @@ const MyProductContent = () => {
 									/>
 							  ))
 							: 'Chưa có sản phẩm nào'}
+						{products.length > 0 && (
+							<CPagination
+								{...pagination}
+								handlePageChange={handlePageChange}
+							/>
+						)}
 					</div>
 					<div className='col-lg-6 col-md-12'>
 						<AddProduct fetchProduct={fetchProduct} />

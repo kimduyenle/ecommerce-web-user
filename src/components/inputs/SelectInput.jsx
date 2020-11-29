@@ -15,7 +15,13 @@ const useStyles = makeStyles(theme => ({
 	},
 	label: {
 		background: '#fff',
-		padding: '0 6px'
+		padding: '0 6px',
+		fontSize: 15,
+		fontFamily: 'Quattrocento Sans'
+	},
+	item: {
+		fontSize: 15,
+		fontFamily: 'Quattrocento Sans'
 	}
 }));
 
@@ -30,7 +36,7 @@ const SelectInput = ({ field = {}, form = {}, ...props }) => {
 			<Select {...field} {...restProps} id={id}>
 				{options.map(({ key, label }) => {
 					return (
-						<MenuItem value={key} key={key}>
+						<MenuItem value={key} key={key} className={classes.item}>
 							{label}
 						</MenuItem>
 					);

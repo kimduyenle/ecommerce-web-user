@@ -64,12 +64,13 @@ export const signin = createAsyncThunk(
 
 export const changePassword = createAsyncThunk(
 	'auth/password-change',
-	({ old_password, new_password1, new_password2, onComplete }) => {
+	({ oldPassword, newPassword, confirmPassword, id, onComplete }) => {
 		return API.auth
 			.changePassword({
-				old_password,
-				new_password1,
-				new_password2
+				oldPassword,
+				newPassword,
+				confirmPassword,
+				id
 			})
 			.then(({ data }) => {
 				onComplete(null, data);

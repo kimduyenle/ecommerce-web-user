@@ -38,6 +38,12 @@ const useStyles = makeStyles(theme => ({
 		color: '#666666',
 		padding: 0
 	},
+	field: {
+		'& label, & input, & textarea, & > div': {
+			fontSize: 15,
+			fontFamily: 'Quattrocento Sans'
+		}
+	},
 	button: {
 		backgroundColor: '#122230',
 		'&:hover': {
@@ -149,6 +155,7 @@ const AddProduct = ({ fetchProduct }) => {
 									component={TextInput}
 									fullWidth
 									variant='outlined'
+									className={classes.field}
 								/>
 								<Field
 									name='categoryId'
@@ -161,6 +168,7 @@ const AddProduct = ({ fetchProduct }) => {
 									component={SelectInput}
 									fullWidth
 									label='Category'
+									className={classes.field}
 									// variant="outlined"
 								/>
 								<Field
@@ -171,6 +179,7 @@ const AddProduct = ({ fetchProduct }) => {
 									fullWidth
 									type='number'
 									variant='outlined'
+									className={classes.field}
 								/>
 								<Field
 									label='Price'
@@ -180,6 +189,7 @@ const AddProduct = ({ fetchProduct }) => {
 									fullWidth
 									type='number'
 									variant='outlined'
+									className={classes.field}
 								/>
 								<Field
 									label='Description'
@@ -190,6 +200,7 @@ const AddProduct = ({ fetchProduct }) => {
 									multiline
 									rows={5}
 									variant='outlined'
+									className={classes.field}
 								/>
 								<input
 									name='images'

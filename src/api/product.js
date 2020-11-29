@@ -5,9 +5,17 @@ const productAPI = {
 		const url = '/products';
 		return apiClient.get(url);
 	},
-	getByUser: () => {
+	getByUser: (options = {}) => {
 		const url = '/products/user';
-		return apiClient.get(url);
+		return apiClient.get(url, options);
+	},
+	getByCategory: (categoryId, options = {}) => {
+		const url = `/products/category/${categoryId}`;
+		return apiClient.get(url, options);
+	},
+	getByType: (typeId, options = {}) => {
+		const url = `/products/type/${typeId}`;
+		return apiClient.get(url, options);
 	},
 	get: id => {
 		const url = `/products/${id}`;

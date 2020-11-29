@@ -90,13 +90,21 @@ const Header = () => {
 												{accountMenuOpen && (
 													<ul>
 														<li>
-															<NavLink to='/profile'>Profile</NavLink>
+															<NavLink to='/profile'>Hồ sơ</NavLink>
 														</li>
 														<li>
-															<NavLink to='/my-product'>My product</NavLink>
+															<NavLink to='/my-product'>
+																Sản phẩm của tôi
+															</NavLink>
 														</li>
 														<li>
-															<NavLink to='/logout'>Logout</NavLink>
+															<NavLink to='/my-order'>Đơn mua</NavLink>
+														</li>
+														<li>
+															<NavLink to='/order'>Đơn bán</NavLink>
+														</li>
+														<li>
+															<NavLink to='/logout'>Đăng xuất</NavLink>
 														</li>
 													</ul>
 												)}

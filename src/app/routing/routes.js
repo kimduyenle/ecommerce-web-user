@@ -43,6 +43,18 @@ const routes = {
 		),
 		exact: true
 	},
+	'my-order': {
+		path: '/my-order',
+		component: withLayout(
+			React.lazy(() => import('pages/accountInfo/MyOrder'))
+		),
+		exact: true
+	},
+	order: {
+		path: '/order',
+		component: withLayout(React.lazy(() => import('pages/accountInfo/Order'))),
+		exact: true
+	},
 	'product-detail': {
 		path: '/product-detail',
 		component: withLayout(React.lazy(() => import('pages/ProductDetail'))),
@@ -58,9 +70,9 @@ const routes = {
 		component: withLayout(React.lazy(() => import('pages/Checkout'))),
 		exact: true
 	},
-	shop: {
-		path: '/shop',
-		component: withLayout(React.lazy(() => import('pages/Shop'))),
+	'category-detail': {
+		path: '/category-detail',
+		component: withLayout(React.lazy(() => import('pages/CategoryDetail'))),
 		exact: true
 	}
 };
