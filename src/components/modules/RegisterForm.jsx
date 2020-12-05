@@ -53,60 +53,60 @@ const RegisterForm = () => {
 			{({ isSubmitting }) => (
 				<>
 					<div className='title-left'>
-						<h3>REGISTER</h3>
+						<h3>ĐĂNG KÝ</h3>
 					</div>
 					<Form>
 						<div className='form-row'>
 							<div className='form-group col-md-12'>
-								<label htmlFor='InputUsername'>Username</label>
+								<label htmlFor='InputUsername'>Tên tài khoản</label>
 								<Field
 									name='username'
 									type='text'
 									className='form-control'
 									id='InputUsername'
-									placeholder='Enter Username'
+									placeholder='Nhập tên tài khoản'
 									component={TextInput}
 									variant='outlined'
 								/>
 							</div>
 							<div className='form-group col-md-12'>
-								<label htmlFor='InputEmail'>Email Address</label>
+								<label htmlFor='InputEmail'>Email</label>
 								<Field
 									name='email'
 									type='text'
 									className='form-control'
 									id='InputEmail'
-									placeholder='Enter Email'
+									placeholder='Nhập email'
 									component={TextInput}
 									variant='outlined'
 								/>
 							</div>
 							<div className='form-group col-md-12'>
-								<label htmlFor='InputPassword'>Password</label>
+								<label htmlFor='InputPassword'>Mật khẩu</label>
 								<Field
 									name='password'
 									type='password'
 									className='form-control'
 									id='InputPassword'
-									placeholder='Enter Password'
+									placeholder='Nhập mật khẩu'
 									component={TextInput}
 									variant='outlined'
 								/>
 							</div>
 						</div>
 						<button type='submit' className='btn hvr-hover'>
-							Register
+							Đăng ký
 						</button>
 					</Form>
 					<div className='action'>
-						<label className='question'>Already have an account?</label>
+						<label className='question'>Đã có tài khoản?</label>
 						<button
 							onClick={() => {
 								history.push('/login');
 							}}
 							className='btn-login'
 						>
-							Login
+							Đăng nhập
 						</button>
 					</div>
 				</>

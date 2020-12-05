@@ -316,7 +316,6 @@ p {
 .our-link ul li button {
 	color: #ffffff;
 	font-weight: 700;
-	text-transform: uppercase;
 	font-size: 14px;
 	background-color: transparent;
 	border: none;
@@ -783,7 +782,7 @@ ul.cart-list > li.total > .btn:hover {
 	line-height: 40px;
 }
 .top-search input.form-control {
-	color: #ffffff;
+	color: #010101;
 }
 /*------------------------------------------------------------------ Slider -------------------------------------------------------------------*/
 .cover-slides {
@@ -857,7 +856,7 @@ ul.cart-list > li.total > .btn:hover {
 }
 /*------------------------------------------------------------------ Categories Shop -------------------------------------------------------------------*/
 .categories-shop {
-	padding: 70px 0px;
+	padding: 70px 0px 0px;
 }
 .shop-cat-box {
 	margin-bottom: 30px;
@@ -932,7 +931,7 @@ ul.cart-list > li.total > .btn:hover {
 	font-size: 16px;
 }
 .products-box {
-	padding: 70px 0px;
+	padding: 0 0 70px;
 }
 .special-menu {
 	margin-bottom: 40px;
@@ -975,10 +974,20 @@ ul.cart-list > li.total > .btn:hover {
 	overflow: hidden;
 	position: relative;
 }
+.page_home .products-single .box-img-hover,
+.page_category-detail .products-single .box-img-hover {
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+	padding-bottom: 100%;
+}
 .box-img-hover img {
 	margin: 0 auto;
 	text-align: center;
 	display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
 }
 .type-lb {
 	position: absolute;
@@ -1840,7 +1849,8 @@ ul.cart-list > li.total > .btn:hover {
 	height: 1px;
 	background-color: #ced4da;
 }
-.list-group-tree .list-group-item:hover {
+.list-group-tree .list-group-item:hover,
+.list-group-tree .list-group-item.active {
 	color: #d33b33;
 	background-color: #fff;
 	outline: 0;
@@ -1915,7 +1925,10 @@ ul.cart-list > li.total > .btn:hover {
 	float: left;
 }
 .product-item-filter .toolbar-sorter-right {
-	width: 65%;
+	width: 100%;
+}
+.product-item-filter .toolbar-sorter-right .selectpicker {
+	width: 77%;
 }
 .toolbar-sorter-right {
 	float: left;
@@ -2152,6 +2165,12 @@ ul.cart-list > li.total > .btn:hover {
 	padding: 70px 0px;
 }
 .shopping-box a {
+	font-size: 18px;
+	color: #ffffff;
+	border: none;
+	padding: 10px 20px;
+}
+.shopping-box button {
 	font-size: 18px;
 	color: #ffffff;
 	border: none;
@@ -2536,7 +2555,6 @@ ul.cart-list > li.total > .btn:hover {
 	padding: 0px 15px;
 }
 .single-product-details .shop-info {
-	margin-top: 100px;
 	font-size: 18px;
 	font-weight: 700;
 	color: #1f1f1f;
@@ -2652,4 +2670,16 @@ ul.cart-list > li.total > .btn:hover {
 .arrow::before,
 .arrow::after {
 	display: none !important;
+}
+.odr-box {
+	margin-bottom: 20px;
+}
+.odr-box .rounded > div:last-child {
+	margin-bottom: 0 !important;
+	border-bottom: 0 !important;
+}
+.paypal {
+	padding: 70px 0;
+	max-width: 300px;
+	margin: auto;
 }

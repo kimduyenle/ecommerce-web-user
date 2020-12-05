@@ -17,16 +17,24 @@ const orderAPI = {
 		const url = `/orders/owner`;
 		return apiClient.get(url, options);
 	},
-	//   add: ({categoryId, name, description, quantity, price}) => {
-	//     const url = `/orders`;
-	//     return apiClient.post(url, {
-	//       categoryId,
-	// 			name,
-	// 			description,
-	// 			quantity,
-	// 			price
-	//     });
-	//   },
+	add: ({
+		paymentMethod,
+		deliveryPhoneNumber,
+		deliveryAddress,
+		province,
+		district,
+		transId
+	}) => {
+		const url = `/orders`;
+		return apiClient.post(url, {
+			paymentMethod,
+			deliveryPhoneNumber,
+			deliveryAddress,
+			province,
+			district,
+			transId
+		});
+	},
 	//   edit: ({categoryId, name, description, quantity, price}, id) => {
 	//     const url = `/orders/${id}`;
 	//     return apiClient.put(url, {

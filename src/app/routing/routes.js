@@ -74,6 +74,11 @@ const routes = {
 		path: '/category-detail',
 		component: withLayout(React.lazy(() => import('pages/CategoryDetail'))),
 		exact: true
+	},
+	paypal: {
+		path: '/paypal',
+		component: withLayout(React.lazy(() => import('pages/Paypal'))),
+		exact: true
 	}
 };
 

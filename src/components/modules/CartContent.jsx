@@ -32,7 +32,7 @@ const CartContent = () => {
 
 	return (
 		<div>
-			<TitleBox parent='Home' children='Cart' path='/' />
+			<TitleBox parent='Trang chủ' children='Giỏ hàng' path='/' />
 			<Cart cartDetails={cart.cartDetails} fetchCart={fetchCart} />
 		</div>
 	);

@@ -34,6 +34,7 @@ const ProductList = () => {
 	useEffect(() => {
 		fetchProducts();
 		fetchLatestProducts();
+		fetchBestSellerProducts();
 	}, []);
 
 	const fetchProducts = async () => {
@@ -58,6 +59,15 @@ const ProductList = () => {
 		try {
 			const response = await productAPI.getByType(2);
 			setLatestProducts(response.data.products);
+		} catch (error) {
+			console.log('Failed to fetch products: ', error);
+		}
+	};
+
+	const fetchBestSellerProducts = async () => {
+		try {
+			const response = await productAPI.getByType(3);
+			setBestSellerProducts(response.data.products);
 		} catch (error) {
 			console.log('Failed to fetch products: ', error);
 		}
@@ -92,11 +102,7 @@ const ProductList = () => {
 				<div className='row'>
 					<div className='col-lg-12'>
 						<div className='title-all text-center'>
-							<h1>Featured Products</h1>
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit
-								amet lacus enim.
-							</p>
+							<h1>SẢN PHẨM</h1>
 						</div>
 					</div>
 				</div>
@@ -134,6 +140,26 @@ const ProductList = () => {
 					{latestProducts.map((product, index) => (
 						<div
 							className='col-lg-3 col-md-6 special-grid top-featured'
+							key={index}
+						>
+							<Product
+								id={product.id}
+								name={product.name}
+								price={product.price}
+								image={
+									product.images.length > 0
+										? product.images[0].path
+										: 'https://picsum.photos/400'
+								}
+								cartId={cartId}
+								isAuthenticated={isAuthenticated}
+								fetchCart={fetchCart}
+							/>
+						</div>
+					))}
+					{bestSellerProducts.map((product, index) => (
+						<div
+							className='col-lg-3 col-md-6 special-grid best-seller'
 							key={index}
 						>
 							<Product

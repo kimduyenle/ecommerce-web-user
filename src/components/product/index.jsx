@@ -21,9 +21,6 @@ const Product = ({
 	return (
 		<div className='products-single fix'>
 			<div className='box-img-hover'>
-				<div className='type-lb'>
-					<p className='sale'>Sale</p>
-				</div>
 				<img src={image} className='img-fluid' alt='' />
 				<div className='mask-icon'>
 					<ul>
@@ -39,29 +36,9 @@ const Product = ({
 								href='/product-detail'
 								data-toggle='tooltip'
 								data-placement='right'
-								title='View'
+								title='Xem ngay'
 							>
 								<i className='fas fa-eye'></i>
-							</a>
-						</li>
-						<li>
-							<a
-								href='/'
-								data-toggle='tooltip'
-								data-placement='right'
-								title='Compare'
-							>
-								<i className='fas fa-sync-alt'></i>
-							</a>
-						</li>
-						<li>
-							<a
-								href='/'
-								data-toggle='tooltip'
-								data-placement='right'
-								title='Add to Wishlist'
-							>
-								<i className='far fa-heart'></i>
 							</a>
 						</li>
 					</ul>
@@ -69,7 +46,7 @@ const Product = ({
 						className='cart'
 						onClick={async () => {
 							if (!isAuthenticated) {
-								showError('Please login to continue.');
+								showError('Vui lòng đăng nhập để tiếp tục');
 								return;
 							}
 							try {
@@ -81,13 +58,13 @@ const Product = ({
 									price
 								});
 								await fetchCart();
-								showSuccess('Added successfully.');
+								showSuccess('Đã thêm vào giỏ hàng');
 							} catch (error) {
-								showError('Failed to add to cart.');
+								showError('Không thể thêm vào giỏ hàng');
 							}
 						}}
 					>
-						Add to Cart
+						Thêm vào giỏ hàng
 					</button>
 				</div>
 			</div>

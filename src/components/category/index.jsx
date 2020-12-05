@@ -13,8 +13,10 @@ const Category = ({ category }) => {
 				});
 			}}
 		>
-			<img className='img-fluid' src='images/t-shirts-img.jpg' alt='' />
-			<span className='btn hvr-hover'>{category.name}</span>
+			{/* <img className='img-fluid' src='images/t-shirts-img.jpg' alt='' /> */}
+			<span className='btn hvr-hover' style={{ whiteSpace: 'break-spaces' }}>
+				{category.name}
+			</span>
 		</div>
 	);
 };

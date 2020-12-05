@@ -119,7 +119,7 @@ const ProductDetail = ({
 								})}
 								onSubmit={async ({ quantity }, { setSubmitting }) => {
 									if (!isAuthenticated) {
-										showError('Please login to continue.');
+										showError('Vui lòng đăng nhập để tiếp tục');
 										return;
 									}
 									try {
@@ -130,35 +130,33 @@ const ProductDetail = ({
 											price
 										});
 										await fetchCart();
-										showSuccess('Added successfully.');
+										showSuccess('Đã thêm vào giỏ hàng');
 									} catch (error) {
-										showError('Failed to add to cart.');
+										showError('Không thể thêm vào giỏ hàng');
 									}
 								}}
 							>
 								{({ isSubmitting }) => (
 									<Form>
 										<h2>{name}</h2>
-										<h5>
-											{' '}
-											<del>$ 60.00</del> {price}
-										</h5>
+										<h5> {price}</h5>
 										<p className='available-stock'>
 											<span>
 												{' '}
-												More than {quantity} available /{' '}
-												<a href='/'>{sold} sold </a>
+												Số lượng: có sẵn {quantity} /
+												<span style={{ color: '#d33b33' }}> đã bán {sold}</span>
 											</span>
 										</p>
-										<h4>Description:</h4>
+										<h4>Mô tả sản phẩm:</h4>
 										<p>{description}</p>
 										<ul>
 											<li>
 												<div className='form-group quantity-box'>
-													<label className='control-label'>Quantity</label>
+													<label className='control-label'>Số lượng</label>
 													<Field
 														className='form-control'
 														min='1'
+														max={quantity}
 														name='quantity'
 														component={NumberInput}
 													/>
@@ -173,45 +171,11 @@ const ProductDetail = ({
 													data-fancybox-close=''
 													href='/'
 												>
-													Buy New
+													Mua ngay
 												</a>
 												<button className='btn hvr-hover' type='submit'>
-													Add to cart
+													Thêm vào giỏ hàng
 												</button>
-											</div>
-										</div>
-
-										<div className='add-to-btn'>
-											<div className='add-comp'>
-												<a className='btn hvr-hover' href='/'>
-													<i className='fas fa-heart'></i> Add to wishlist
-												</a>
-												<a className='btn hvr-hover' href='/'>
-													<i className='fas fa-sync-alt'></i> Add to Compare
-												</a>
-											</div>
-											<div className='share-bar'>
-												<a className='btn hvr-hover' href='/'>
-													<i className='fab fa-facebook' aria-hidden='true'></i>
-												</a>
-												<a className='btn hvr-hover' href='/'>
-													<i
-														className='fab fa-google-plus'
-														aria-hidden='true'
-													></i>
-												</a>
-												<a className='btn hvr-hover' href='/'>
-													<i className='fab fa-twitter' aria-hidden='true'></i>
-												</a>
-												<a className='btn hvr-hover' href='/'>
-													<i
-														className='fab fa-pinterest-p'
-														aria-hidden='true'
-													></i>
-												</a>
-												<a className='btn hvr-hover' href='/'>
-													<i className='fab fa-whatsapp' aria-hidden='true'></i>
-												</a>
 											</div>
 										</div>
 									</Form>
@@ -236,7 +200,11 @@ const ProductDetail = ({
 				<div className='row my-5'>
 					<div className='col-12'>
 						<div className='review-title'>Đánh giá sản phẩm:</div>
-						<ReviewList reviews={reviews} />
+						{reviews.length > 0 ? (
+							<ReviewList reviews={reviews} />
+						) : (
+							'Chưa có đánh giá'
+						)}
 					</div>
 				</div>
 

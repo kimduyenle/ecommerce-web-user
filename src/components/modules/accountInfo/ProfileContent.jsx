@@ -46,7 +46,7 @@ const ProfileContent = () => {
 
 	return (
 		<>
-			<TitleBox parent='Home' children='Profile' path='/' />
+			<TitleBox parent='Trang chủ' children='Hồ sơ' path='/' />
 			<div className='container'>
 				<Page className={classes.root} title='Account'>
 					<Container maxWidth='lg'>

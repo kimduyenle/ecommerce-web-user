@@ -103,7 +103,7 @@ const ProductDetailContent = () => {
 
 	return (
 		<div>
-			<TitleBox parent='Home' children='Product Detail' path='/' />
+			<TitleBox parent='Trang chủ' children='Chi tiết sản phẩm' path='/' />
 			<ProductDetail
 				{...product}
 				cartId={cart.id}

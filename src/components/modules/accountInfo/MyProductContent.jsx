@@ -76,7 +76,7 @@ const MyProductContent = () => {
 
 	return (
 		<>
-			<TitleBox parent='Home' children='My Product' path='/' />
+			<TitleBox parent='Trang chủ' children='Sản phẩm của tôi' path='/' />
 			<div className={clsx('container', classes.root)}>
 				<div className='row special-list'>
 					<div className='col-lg-6 col-md-12'>

@@ -82,7 +82,7 @@ const MyProduct = ({ product, handleDeleteProduct }) => {
 				<Card className={classes.root}>
 					<CardMedia
 						className={classes.cover}
-						image={product.images[0].path}
+						image={product.images.length > 0 && product.images[0].path}
 						title='Live from space album cover'
 					/>
 					<div className={classes.details}>

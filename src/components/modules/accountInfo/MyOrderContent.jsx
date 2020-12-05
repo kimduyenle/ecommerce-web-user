@@ -168,7 +168,7 @@ const MyOrderContent = () => {
 
 	return (
 		<>
-			<TitleBox parent='Home' children='My Order' path='/' />
+			<TitleBox parent='Trang chủ' children='Đơn mua' path='/' />
 			<div className={clsx(classes.root, 'container')}>
 				<AppBar position='static' className={classes.header}>
 					<Tabs

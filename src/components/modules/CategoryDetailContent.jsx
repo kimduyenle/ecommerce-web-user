@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import qs from 'qs';
 import TitleBox from 'components/titleBox';
 import Product from 'components/product';
 import productAPI from 'api/product';
+import categoryAPI from 'api/category';
+import { Slider, makeStyles } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { getByUser } from 'features/cartSlice';
 import { localAuthenticate } from 'utils/localAuth';
@@ -12,14 +14,49 @@ import pro1 from 'assets/images/img-pro-01.jpg';
 import pro2 from 'assets/images/img-pro-02.jpg';
 import pro3 from 'assets/images/img-pro-03.jpg';
 
+const useStyles = makeStyles({
+	root: {
+		'& > span': {
+			color: '#d33b33',
+			height: 10,
+			marginTop: -13,
+			'& span:nth-child(-n+2)': {
+				height: 10
+			},
+			'& .MuiSlider-thumb': {
+				width: 21,
+				height: 21,
+				border: '2px solid #fff',
+				boxShadow: '0px 0px 6.65px 0.35px rgba(0,0,0,0.15)',
+				marginLeft: -10,
+				'& > span': {
+					display: 'none'
+				}
+			},
+			'& .MuiSlider-rail': {
+				color: 'transparent'
+			}
+		}
+	}
+});
+
+const valuetext = value => {
+	return `${value}°C`;
+};
+
 const CategoryDetailContent = () => {
+	const classes = useStyles();
+	const history = useHistory();
+	const [categories, setCategories] = useState([]);
 	const { isAuthenticated } = localAuthenticate();
 	const { search } = useLocation();
 	const { id } = qs.parse(search.replace(/^\?/, ''));
 	const [products, setProducts] = useState([]);
 	const { cart } = useSelector(state => state.cart);
 	const cartId = cart.id;
+	const [currentCategoryId, setCurrentCategoryId] = useState(id);
 	const dispatch = useDispatch();
+	const [sortValue, setSortValue] = useState(0);
 	const [pagination, setPagination] = useState({
 		activePage: 1,
 		itemsCountPerPage: 0,
@@ -34,14 +71,26 @@ const CategoryDetailContent = () => {
 		});
 	};
 
+	const [value, setValue] = useState([1, 1000]);
+
+	const handleChange = (event, newValue) => {
+		setValue(newValue);
+	};
+
 	const fetchProductsByCategory = async id => {
 		try {
 			const params = {
 				page: pagination.activePage,
-				limit: 3
+				limit: 9,
+				type: sortValue
 			};
 			const response = await productAPI.getByCategory(id, { params: params });
-			setProducts(response.data.dataInPage);
+			const products = await response.data.dataInPage;
+
+			const filteredProducts = products.filter(
+				product => product.price >= value[0] && product.price <= value[1]
+			);
+			setProducts(filteredProducts);
 			setPagination({
 				...pagination,
 				itemsCountPerPage: params.limit,
@@ -57,12 +106,28 @@ const CategoryDetailContent = () => {
 	};
 
 	useEffect(() => {
-		fetchProductsByCategory(id);
-	}, [pagination.activePage]);
+		fetchProductsByCategory(currentCategoryId, value);
+	}, [pagination.activePage, sortValue, currentCategoryId, value]);
 
+	useEffect(() => {
+		fetchCategories();
+	}, []);
+
+	const fetchCategories = async () => {
+		try {
+			const response = await categoryAPI.getAll();
+			setCategories(response.data.categories);
+		} catch (error) {
+			console.log('Failed to fetch categories: ', error);
+		}
+	};
 	return (
 		<>
-			<TitleBox parent='Home' children='Category Detail' path='/' />
+			<TitleBox
+				parent='Trang chủ'
+				children={`Danh mục ${categories[currentCategoryId - 1]?.name}`}
+				path='/'
+			/>
 			<div className='shop-box-inner'>
 				<div className='container'>
 					<div className='row'>
@@ -72,7 +137,7 @@ const CategoryDetailContent = () => {
 									<form action='#'>
 										<input
 											className='form-control'
-											placeholder='Search here...'
+											placeholder='Tìm kiếm'
 											type='text'
 										/>
 										<button type='submit'>
@@ -83,272 +148,63 @@ const CategoryDetailContent = () => {
 								</div>
 								<div className='filter-sidebar-left'>
 									<div className='title-left'>
-										<h3>Categories</h3>
+										<h3>Danh mục</h3>
 									</div>
 									<div
 										className='list-group list-group-collapse list-group-sm list-group-tree'
 										id='list-group-men'
 										data-children='.sub-men'
 									>
-										<div className='list-group-collapse sub-men'>
-											<a
-												className='list-group-item list-group-item-action'
-												href='#sub-men1'
-												data-toggle='collapse'
-												aria-expanded='true'
-												aria-controls='sub-men1'
-											>
-												Clothing <small className='text-muted'>(100)</small>
-											</a>
-											<div
-												className='collapse show'
-												id='sub-men1'
-												data-parent='#list-group-men'
-											>
-												<div className='list-group'>
-													<a
-														href='/'
-														className='list-group-item list-group-item-action active'
-													>
-														T-Shirts <small className='text-muted'>(50)</small>
-													</a>
-													<a
-														href='/'
-														className='list-group-item list-group-item-action'
-													>
-														Polo T-Shirts{' '}
-														<small className='text-muted'>(10)</small>
-													</a>
-													<a
-														href='/'
-														className='list-group-item list-group-item-action'
-													>
-														Round Neck T-Shirts{' '}
-														<small className='text-muted'>(10)</small>
-													</a>
-													<a
-														href='/'
-														className='list-group-item list-group-item-action'
-													>
-														V Neck T-Shirts{' '}
-														<small className='text-muted'>(10)</small>
-													</a>
-													<a
-														href='/'
-														className='list-group-item list-group-item-action'
-													>
-														Hooded T-Shirts{' '}
-														<small className='text-muted'>(20)</small>
-													</a>
-												</div>
+										{categories.map((category, index) => (
+											<div className='list-group-collapse sub-men' key={index}>
+												<button
+													className={`list-group-item list-group-item-action ${
+														currentCategoryId === category.id ||
+														id === category.id
+															? 'active'
+															: ''
+													}`}
+													// href='/category-detail'
+													onClick={() => setCurrentCategoryId(category.id)}
+												>
+													{category.name}{' '}
+													<small className='text-muted'>
+														({category.products.length})
+													</small>
+												</button>
 											</div>
-										</div>
-										<div className='list-group-collapse sub-men'>
-											<a
-												className='list-group-item list-group-item-action'
-												href='#sub-men2'
-												data-toggle='collapse'
-												aria-expanded='false'
-												aria-controls='sub-men2'
-											>
-												Footwear
-												<small className='text-muted'>(50)</small>
-											</a>
-											<div
-												className='collapse'
-												id='sub-men2'
-												data-parent='#list-group-men'
-											>
-												<div className='list-group'>
-													<a
-														href='/'
-														className='list-group-item list-group-item-action'
-													>
-														Sports Shoes{' '}
-														<small className='text-muted'>(10)</small>
-													</a>
-													<a
-														href='/'
-														className='list-group-item list-group-item-action'
-													>
-														Sneakers <small className='text-muted'>(20)</small>
-													</a>
-													<a
-														href='/'
-														className='list-group-item list-group-item-action'
-													>
-														Formal Shoes{' '}
-														<small className='text-muted'>(20)</small>
-													</a>
-												</div>
-											</div>
-										</div>
-										<a
-											href='/'
-											className='list-group-item list-group-item-action'
-										>
-											{' '}
-											Men <small className='text-muted'>(150) </small>
-										</a>
-										<a
-											href='/'
-											className='list-group-item list-group-item-action'
-										>
-											Accessories <small className='text-muted'>(11)</small>
-										</a>
-										<a
-											href='/'
-											className='list-group-item list-group-item-action'
-										>
-											Bags <small className='text-muted'>(22)</small>
-										</a>
+										))}
 									</div>
 								</div>
 								<div className='filter-price-left'>
 									<div className='title-left'>
-										<h3>Price</h3>
+										<h3>Khoảng giá</h3>
 									</div>
 									<div className='price-box-slider'>
-										<div id='slider-range'></div>
-										{/* <div id="slider-range" className="ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all">
-                                  <div className="ui-slider-range ui-widget-header ui-corner-all" style={{left: '11.075%', width: '29.425%'}}></div>
-                                  <span className="ui-slider-handle ui-state-default ui-corner-all" tabIndex="0" style={{left: '11.075%'}}></span>
-                                  <span className="ui-slider-handle ui-state-default ui-corner-all" tabIndex="0" style={{left: '40.5%'}}></span>
-                                </div> */}
+										<div id='slider-range' className={classes.root}>
+											<Slider
+												value={value}
+												onChange={handleChange}
+												valueLabelDisplay='auto'
+												aria-labelledby='slider-range'
+												max={1000}
+												min={1}
+												getAriaValueText={valuetext}
+											/>
+										</div>
 										<p>
 											<input
 												type='text'
 												id='amount'
 												readOnly
+												value={`$${value[0]} - $${value[1]}`}
 												style={{
 													border: 0,
 													color: '#fbb714',
 													fontWeight: 'bold'
 												}}
 											/>
-											<button className='btn hvr-hover' type='submit'>
-												Filter
-											</button>
 										</p>
-									</div>
-								</div>
-								<div className='filter-brand-left'>
-									<div className='title-left'>
-										<h3>Brand</h3>
-									</div>
-									<div className='brand-box'>
-										<ul>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios1'
-														value='Yes'
-														type='radio'
-													/>
-													<label htmlFor='Radios1'> Supreme </label>
-												</div>
-											</li>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios2'
-														value='No'
-														type='radio'
-													/>
-													<label htmlFor='Radios2'> A Bathing Ape </label>
-												</div>
-											</li>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios3'
-														value='declater'
-														type='radio'
-													/>
-													<label htmlFor='Radios3'> The Hundreds </label>
-												</div>
-											</li>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios4'
-														value='declater'
-														type='radio'
-													/>
-													<label htmlFor='Radios4'> Alife </label>
-												</div>
-											</li>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios5'
-														value='declater'
-														type='radio'
-													/>
-													<label htmlFor='Radios5'> Neighborhood </label>
-												</div>
-											</li>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios6'
-														value='declater'
-														type='radio'
-													/>
-													<label htmlFor='Radios6'> CLOT </label>
-												</div>
-											</li>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios7'
-														value='declater'
-														type='radio'
-													/>
-													<label htmlFor='Radios7'> Acapulco Gold </label>
-												</div>
-											</li>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios8'
-														value='declater'
-														type='radio'
-													/>
-													<label htmlFor='Radios8'> UNDFTD </label>
-												</div>
-											</li>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios9'
-														value='declater'
-														type='radio'
-													/>
-													<label htmlFor='Radios9'> Mighty Healthy </label>
-												</div>
-											</li>
-											<li>
-												<div className='radio radio-danger'>
-													<input
-														name='survey'
-														id='Radios10'
-														value='declater'
-														type='radio'
-													/>
-													<label htmlFor='Radios10'> Fiberops </label>
-												</div>
-											</li>
-										</ul>
 									</div>
 								</div>
 							</div>
@@ -357,21 +213,28 @@ const CategoryDetailContent = () => {
 							<div className='right-product-box'>
 								<div className='product-item-filter row'>
 									<div className='col-12 col-sm-8 text-center text-sm-left'>
-										<div className='toolbar-sorter-right'>
-											<span>Sort by </span>
+										<div className='toolbar-sorter-right d-flex'>
+											<span>Sắp xếp theo </span>
 											<select
 												id='basic'
 												className='selectpicker show-tick form-control'
 												data-placeholder='$ USD'
+												value={sortValue}
+												onChange={e => {
+													setSortValue(e.target.value);
+													console.log(sortValue);
+												}}
 											>
-												<option data-display='Select'>Nothing</option>
-												<option value='1'>Popularity</option>
-												<option value='2'>High Price → High Price</option>
-												<option value='3'>Low Price → High Price</option>
-												<option value='4'>Best Selling</option>
+												<option data-display='Select' value='0'>
+													Nothing
+												</option>
+												<option value='1'>Mới nhất</option>
+												<option value='2'>Bán chạy</option>
+												<option value='3'>Giá cao → Giá thấp</option>
+												<option value='4'>Giá thấp → Giá cao</option>
 											</select>
 										</div>
-										<p>Showing all 4 results</p>
+										{/* <p>Showing all 4 results</p> */}
 									</div>
 									<div className='col-12 col-sm-4 text-center text-sm-right'>
 										<ul className='nav nav-tabs ml-auto'>

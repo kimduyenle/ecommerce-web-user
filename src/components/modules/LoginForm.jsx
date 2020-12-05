@@ -46,48 +46,48 @@ const LoginForm = () => {
 			{({ isSubmitting }) => (
 				<>
 					<div className='title-left'>
-						<h3>LOGIN</h3>
+						<h3>ĐĂNG NHẬP</h3>
 					</div>
 					<Form>
 						<div className='form-row'>
 							<div className='form-group col-md-12'>
-								<label htmlFor='InputEmail'>Username</label>
+								<label htmlFor='InputEmail'>Tên tài khoản</label>
 								<Field
 									name='username'
 									type='text'
 									className='form-control'
 									id='InputEmail'
-									placeholder='Enter Username'
+									placeholder='Nhập tên tài khoản'
 									component={TextInput}
 									variant='outlined'
 								/>
 							</div>
 							<div className='form-group col-md-12'>
-								<label htmlFor='InputPassword'>Password</label>
+								<label htmlFor='InputPassword'>Mật khẩu</label>
 								<Field
 									name='password'
 									type='password'
 									className='form-control'
 									id='InputPassword'
-									placeholder='Enter Password'
+									placeholder='Nhập mật khẩu'
 									component={TextInput}
 									variant='outlined'
 								/>
 							</div>
 						</div>
 						<button type='submit' className='btn hvr-hover'>
-							Login
+							Đăng nhập
 						</button>
 					</Form>
 					<div className='action'>
-						<label className='question'>Do not have an account?</label>
+						<label className='question'>Chưa có tài khoản?</label>
 						<button
 							onClick={() => {
 								history.push('/register');
 							}}
 							className='btn-register'
 						>
-							Register
+							Đăng ký
 						</button>
 					</div>
 				</>

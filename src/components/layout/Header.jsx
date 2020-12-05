@@ -119,7 +119,7 @@ const Header = () => {
 													}}
 													className='btn'
 												>
-													Login
+													Đăng nhập
 												</button>
 											</li>
 											<li>
@@ -129,7 +129,7 @@ const Header = () => {
 													}}
 													className='btn'
 												>
-													Register
+													Đăng ký
 												</button>
 											</li>
 										</>
@@ -155,164 +155,31 @@ const Header = () => {
 							>
 								<i className='fa fa-bars'></i>
 							</button>
-							<a className='navbar-brand' href='index.html'>
+							{/* <a className='navbar-brand' href='index.html'>
 								<img src={logo} className='logo' alt='' />
-							</a>
+							</a> */}
+							<NavLink to='/'>
+								<img src={logo} className='logo' alt='' />
+							</NavLink>
 						</div>
 
-						<div className='collapse navbar-collapse' id='navbar-menu'>
-							<ul
-								className='nav navbar-nav ml-auto'
-								data-in='fadeInDown'
-								data-out='fadeOutUp'
-							>
-								<li className='nav-item active'>
-									<a className='nav-link' href='index.html'>
-										Home
-									</a>
-								</li>
-								<li className='nav-item'>
-									<a className='nav-link' href='about.html'>
-										About Us
-									</a>
-								</li>
-								<li className='dropdown megamenu-fw'>
-									<a
-										href='/'
-										className='nav-link dropdown-toggle arrow'
-										data-toggle='dropdown'
-									>
-										Product
-									</a>
-									<ul className='dropdown-menu megamenu-content' role='menu'>
-										<li>
-											<div className='row'>
-												<div className='col-menu col-md-3'>
-													<h6 className='title'>Top</h6>
-													<div className='content'>
-														<ul className='menu-col'>
-															<li>
-																<a href='shop.html'>Jackets</a>
-															</li>
-															<li>
-																<a href='shop.html'>Shirts</a>
-															</li>
-															<li>
-																<a href='shop.html'>Sweaters & Cardigans</a>
-															</li>
-															<li>
-																<a href='shop.html'>T-shirts</a>
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div className='col-menu col-md-3'>
-													<h6 className='title'>Bottom</h6>
-													<div className='content'>
-														<ul className='menu-col'>
-															<li>
-																<a href='shop.html'>Swimwear</a>
-															</li>
-															<li>
-																<a href='shop.html'>Skirts</a>
-															</li>
-															<li>
-																<a href='shop.html'>Jeans</a>
-															</li>
-															<li>
-																<a href='shop.html'>Trousers</a>
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div className='col-menu col-md-3'>
-													<h6 className='title'>Clothing</h6>
-													<div className='content'>
-														<ul className='menu-col'>
-															<li>
-																<a href='shop.html'>Top Wear</a>
-															</li>
-															<li>
-																<a href='shop.html'>Party wear</a>
-															</li>
-															<li>
-																<a href='shop.html'>Bottom Wear</a>
-															</li>
-															<li>
-																<a href='shop.html'>Indian Wear</a>
-															</li>
-														</ul>
-													</div>
-												</div>
-												<div className='col-menu col-md-3'>
-													<h6 className='title'>Accessories</h6>
-													<div className='content'>
-														<ul className='menu-col'>
-															<li>
-																<a href='shop.html'>Bags</a>
-															</li>
-															<li>
-																<a href='shop.html'>Sunglasses</a>
-															</li>
-															<li>
-																<a href='shop.html'>Fragrances</a>
-															</li>
-															<li>
-																<a href='shop.html'>Wallets</a>
-															</li>
-														</ul>
-													</div>
-												</div>
-											</div>
-										</li>
-									</ul>
-								</li>
-								<li className='dropdown'>
-									<a
-										href='/'
-										className='nav-link dropdown-toggle arrow'
-										data-toggle='dropdown'
-									>
-										SHOP
-									</a>
-									<ul className='dropdown-menu'>
-										<li>
-											<a href='cart.html'>Cart</a>
-										</li>
-										<li>
-											<a href='checkout.html'>Checkout</a>
-										</li>
-										<li>
-											<a href='my-account.html'>My Account</a>
-										</li>
-										<li>
-											<a href='wishlist.html'>Wishlist</a>
-										</li>
-										<li>
-											<a href='shop-detail.html'>Shop Detail</a>
-										</li>
-									</ul>
-								</li>
-								<li className='nav-item'>
-									<a className='nav-link' href='service.html'>
-										Our Service
-									</a>
-								</li>
-								<li className='nav-item'>
-									<a className='nav-link' href='contact-us.html'>
-										Contact Us
-									</a>
-								</li>
-							</ul>
+						<div className='top-search'>
+							<div className='container'>
+								<div className='input-group'>
+									<span className='input-group-addon'>
+										<i className='fa fa-search'></i>
+									</span>
+									<input
+										type='text'
+										className='form-control'
+										placeholder='Tìm kiếm'
+									/>
+								</div>
+							</div>
 						</div>
 
 						<div className='attr-nav'>
 							<ul>
-								<li className='search'>
-									<a href='/'>
-										<i className='fa fa-search'></i>
-									</a>
-								</li>
 								{isAuthenticated && (
 									<li className='side-menu'>
 										<a href={pathname}>
@@ -334,7 +201,7 @@ const Header = () => {
 									<li key={index}>
 										<a href='/' className='photo'>
 											<img
-												src={detail.product.images[0].path}
+												src={detail.product.images[0]?.path}
 												className='cart-thumb'
 												alt=''
 											/>
@@ -353,10 +220,10 @@ const Header = () => {
 										className='btn btn-default hvr-hover btn-cart'
 										to='/cart'
 									>
-										VIEW CART
+										Xem giỏ hàng
 									</NavLink>
 									<span className='float-right'>
-										<strong>Total</strong>: {calTotal(cart.cartDetails)}
+										<strong>Tổng</strong>: {calTotal(cart.cartDetails)}
 									</span>
 								</li>
 							</ul>
@@ -364,20 +231,6 @@ const Header = () => {
 					</div>
 				</nav>
 			</header>
-
-			<div className='top-search'>
-				<div className='container'>
-					<div className='input-group'>
-						<span className='input-group-addon'>
-							<i className='fa fa-search'></i>
-						</span>
-						<input type='text' className='form-control' placeholder='Search' />
-						<span className='input-group-addon close-search'>
-							<i className='fa fa-times'></i>
-						</span>
-					</div>
-				</div>
-			</div>
 		</div>
 	);
 };
