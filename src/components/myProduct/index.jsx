@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import {
 	Card,
@@ -9,11 +10,6 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import formatDate from 'utils/formatDate';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
-import useNotification from 'utils/hooks/notification';
-import productAPI from 'api/product';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -28,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 		flex: '1 0 auto'
 	},
 	text: {
-		fontFamily: 'Quattrocento Sans'
+		fontFamily: 'Montserrat'
 	},
 	name: {
 		fontWeight: 700,
@@ -72,9 +68,9 @@ const useStyles = makeStyles(theme => ({
 	}
 }));
 
-const MyProduct = ({ product, handleDeleteProduct }) => {
+const MyProduct = ({ product, handleDeleteProduct, toggleEditProduct }) => {
 	const classes = useStyles();
-	const theme = useTheme();
+	const history = useHistory();
 
 	return (
 		<div className='products-single'>
@@ -116,52 +112,27 @@ const MyProduct = ({ product, handleDeleteProduct }) => {
 								Ngày đăng: {formatDate(product.createdAt)}
 							</Typography>
 						</CardContent>
-						{/* <div className={classes.controls}>
-					<IconButton aria-label='previous'>
-						{theme.direction === 'rtl' ? (
-							<SkipNextIcon />
-						) : (
-							<SkipPreviousIcon />
-						)}
-					</IconButton>
-					<IconButton aria-label='play/pause'>
-						<PlayArrowIcon className={classes.playIcon} />
-					</IconButton>
-					<IconButton aria-label='next'>
-						{theme.direction === 'rtl' ? (
-							<SkipPreviousIcon />
-						) : (
-							<SkipNextIcon />
-						)}
-					</IconButton>
-				</div> */}
 					</div>
 				</Card>
 				<div className='mask-icon'>
 					<ul className={classes.icon}>
 						<li>
-							<a
-								onClick={e => {
-									e.preventDefault();
-									// history.push({
-									// 	pathname: '/product-detail',
-									// 	search: `?id=${id}`
-									// });
-								}}
+							<button
+								onClick={() => toggleEditProduct()}
 								href='/product-detail'
 								data-toggle='tooltip'
 								data-placement='right'
-								title='Edit'
+								title='Chỉnh sửa'
 							>
 								<i className='fas fa-edit'></i>
-							</a>
+							</button>
 						</li>
 						<li>
 							<button
 								onClick={() => handleDeleteProduct(product.id)}
 								data-toggle='tooltip'
 								data-placement='right'
-								title='Detele'
+								title='Xóa'
 							>
 								<i className='fas fa-trash-alt'></i>
 							</button>

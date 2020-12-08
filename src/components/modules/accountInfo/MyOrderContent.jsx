@@ -182,7 +182,11 @@ const MyOrderContent = () => {
 					</Tabs>
 				</AppBar>
 				<TabPanel value={value} index={value}>
-					{orders.length > 0 ? <MyOrder orders={orders} /> : 'Chưa có đơn hàng'}
+					{orders.length > 0 ? (
+						<MyOrder orders={orders} fetchOrder={fetchOrder} />
+					) : (
+						'Chưa có đơn hàng'
+					)}
 
 					{/* <CPagination {...pagination} handlePageChange={handlePageChange} /> */}
 				</TabPanel>

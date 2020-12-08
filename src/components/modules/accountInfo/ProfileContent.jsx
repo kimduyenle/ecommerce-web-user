@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Grid, makeStyles } from '@material-ui/core';
+import 'antd/dist/antd.css';
+import { Menu } from 'antd';
 import Page from 'components/Page';
 import TitleBox from 'components/titleBox';
 import ProfileAvatar from 'components/profileInfo/profileAvatar';
@@ -9,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProfile } from 'features/userSlice';
 import userAPI from 'api/user';
 import useNotification from 'utils/hooks/notification';
+import ChangePassword from 'components/profileInfo/changePassword';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -25,6 +28,7 @@ const ProfileContent = () => {
 	const { isAuthenticated, tokenInfo } = localAuthenticate();
 	const dispatch = useDispatch();
 	const { showSuccess, showError } = useNotification();
+	const [selectedMenuItem, setSelectedMenuItem] = useState(1);
 
 	const fetchUser = () => {
 		dispatch(getProfile());
@@ -37,29 +41,57 @@ const ProfileContent = () => {
 				fileData.set('image', image, `${image.lastModified}-${image.name}`);
 				await userAPI.uploadAvatar(fileData, user.id);
 				await fetchUser();
-				showSuccess('Uploaded successfully.');
+				showSuccess('Tải ảnh thành công');
 			}
 		} catch (error) {
-			showError('Failed to edit user.');
+			showError('Tải ảnh không thành công');
 		}
 	};
 
 	return (
 		<>
 			<TitleBox parent='Trang chủ' children='Hồ sơ' path='/' />
-			<div className='container'>
-				<Page className={classes.root} title='Account'>
-					<Container maxWidth='lg'>
-						<Grid container spacing={3}>
-							<Grid item lg={4} md={6} xs={12}>
-								<ProfileAvatar user={{ ...user }} onFileUpload={onFileUpload} />
-							</Grid>
-							<Grid item lg={8} md={6} xs={12}>
-								<ProfileDetails user={{ ...user }} fetchUser={fetchUser} />
-							</Grid>
+			<div className='profile'>
+				<div className='container'>
+					{/* <Page className={classes.root} title='Account'>
+					<Container> */}
+					<Grid container spacing={3}>
+						<Grid item md={3} xs={3}>
+							<Menu
+								style={{ width: 256 }}
+								defaultSelectedKeys={['1']}
+								defaultOpenKeys={['sub1']}
+								mode='inline'
+								theme='light'
+								onClick={value => setSelectedMenuItem(parseInt(value.key))}
+							>
+								<Menu.Item key='1'>Thông tin cá nhân</Menu.Item>
+								<Menu.Item key='2'>Thiết lập mật khẩu</Menu.Item>
+								<Menu.Item key='3'>Ví của tôi</Menu.Item>
+							</Menu>
 						</Grid>
-					</Container>
-				</Page>
+						{selectedMenuItem === 1 && (
+							<>
+								<Grid item md={3} xs={9}>
+									<ProfileAvatar
+										user={{ ...user }}
+										onFileUpload={onFileUpload}
+									/>
+								</Grid>
+								<Grid item md={6} xs={12}>
+									<ProfileDetails user={{ ...user }} fetchUser={fetchUser} />
+								</Grid>
+							</>
+						)}
+						{selectedMenuItem === 2 && (
+							<Grid item md={9} xs={9}>
+								<ChangePassword userId={user.id} />
+							</Grid>
+						)}
+					</Grid>
+					{/* </Container>
+				</Page> */}
+				</div>
 			</div>
 		</>
 	);

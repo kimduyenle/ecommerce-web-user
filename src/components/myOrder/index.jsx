@@ -14,6 +14,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import OrderDetail from '../orderDetail';
 import calTotal from 'utils/calTotal';
 import formatDate from 'utils/formatDate';
+import orderAPI from 'api/order';
+import useNotification from 'utils/hooks/notification';
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -27,18 +29,18 @@ const useStyles = makeStyles(theme => ({
 		marginRight: 20
 	},
 	username: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: theme.typography.pxToRem(15),
 		color: theme.palette.text.secondary,
 		marginRight: 40
 	},
 	quantity: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: theme.typography.pxToRem(15),
 		color: '#d33b33'
 	},
 	total: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		lineHeight: 'normal',
 		fontSize: 18,
 		color: '#d33b33'
@@ -48,26 +50,26 @@ const useStyles = makeStyles(theme => ({
 		marginBottom: 20
 	},
 	title: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: 18,
 		color: '#d33b33'
 	},
 	address: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: '#666666 !important'
 	},
 	date: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: theme.typography.pxToRem(15),
 		color: theme.palette.text.secondary,
 		marginLeft: 60
 	}
 }));
 
-const MyOrder = ({ orders }) => {
+const MyOrder = ({ orders, fetchOrder }) => {
 	const classes = useStyles();
 	const [expanded, setExpanded] = React.useState(false);
-
+	const { showError, showSuccess } = useNotification();
 	const handleChange = panel => (event, isExpanded) => {
 		setExpanded(isExpanded ? panel : false);
 	};
@@ -140,33 +142,32 @@ const MyOrder = ({ orders }) => {
 											</Typography>
 										</CardContent>
 									</Card>
-									{/* <Divider className={classes.line} />
-									<button
-										className='order-action'
-										onClick={async () => {
-											// if (!isAuthenticated) {
-											// 	showError('Please login to continue.');
-											// 	return;
-											// }
-											// try {
-											// 	const quantity = 1;
-											// 	const response = await cartDetailAPI.add({
-											// 		productId: id,
-											// 		cartId,
-											// 		quantity,
-											// 		price
-											// 	});
-											// 	await fetchCart();
-											// 	showSuccess('Added successfully.');
-											// } catch (error) {
-											// 	showError('Failed to add to cart.');
-											// }
-										}}
-									>
-										{order.statusId === 1 && 'Xác nhận đơn hàng'}
-										{order.statusId === 2 && 'Đang giao'}
-										{order.statusId === 3 && 'Đã giao'}
-									</button> */}
+									{order.statusId === 1 && (
+										<>
+											<Divider className={classes.line} />
+											<button
+												className='order-action'
+												onClick={async () => {
+													console.log('statusId: ', order.statusId);
+													try {
+														const statusId = 6;
+														const response = await orderAPI.editStatus(
+															{
+																statusId
+															},
+															order.id
+														);
+														await fetchOrder();
+														showSuccess('Đã hủy đơn hàng');
+													} catch (error) {
+														showError('Không thành công');
+													}
+												}}
+											>
+												Hủy đơn hàng
+											</button>
+										</>
+									)}
 								</div>
 							</div>
 						</div>

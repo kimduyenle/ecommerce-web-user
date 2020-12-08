@@ -2,7 +2,7 @@
     IMPORT FONTS
 -------------------------------------------------------------------*/
 
-@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,600i,700,700i,800,800i');
+/* @import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,600i,700,700i,800,800i'); */
 @import url('https://fonts.googleapis.com/css?family=Quattrocento+Sans:400,400i,700,700i');
 
 /*
@@ -31,10 +31,13 @@
 /*------------------------------------------------------------------
     SKELETON
 -------------------------------------------------------------------*/
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 body {
 	color: #666666;
 	font-size: 15px;
-	font-family: 'Quattrocento Sans', sans-serif;
+	font-family: 'Montserrat', sans-serif;
 	line-height: 1.80857;
 }
 a {
@@ -306,6 +309,7 @@ p {
 }
 .our-link ul {
 	line-height: 40px;
+	margin-bottom: 0;
 }
 .our-link ul li a {
 	color: #ffffff;
@@ -357,10 +361,11 @@ nav.navbar.bootsnav ul.nav > li > a {
 ul.cart-list > li.total > .btn {
 	border-bottom: solid 1px #cfcfcf !important;
 	color: #010101;
-	padding: 10px 15px;
+	padding: 10px 8px;
 	border: none;
 	font-weight: 700;
 	color: #ffffff;
+	font-size: 14px;
 }
 @media (min-width: 1024px) {
 	/* Navbar General ------*/
@@ -778,6 +783,9 @@ ul.cart-list > li.total > .btn:hover {
 	box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.12);
 	border-radius: 0;
 }
+.top-search .container {
+	padding-right: 0 !important;
+}
 .top-search .input-group-addon {
 	line-height: 40px;
 }
@@ -933,6 +941,9 @@ ul.cart-list > li.total > .btn:hover {
 .products-box {
 	padding: 0 0 70px;
 }
+.profile {
+	padding: 70px 0;
+}
 .special-menu {
 	margin-bottom: 40px;
 }
@@ -1087,6 +1098,9 @@ ul.cart-list > li.total > .btn:hover {
 	color: #ffffff;
 	border: none;
 	transition: all 0.3s ease-in-out;
+}
+.detail button.order-action.reject {
+	margin-right: 20px;
 }
 .detail button.order-action:hover {
 	background: #010101;
@@ -1795,7 +1809,20 @@ ul.cart-list > li.total > .btn:hover {
 	cursor: pointer;
 	height: 100%;
 }
+.input-group button {
+	background: #010101;
+	color: #ffffff;
+	font-size: 18px;
+	padding: 6.5px 11px;
+	line-height: 27px;
+	border: none;
+	cursor: pointer;
+	height: 100%;
+}
 .search-product button:hover {
+	background: #d33b33;
+}
+.input-group button:hover {
 	background: #d33b33;
 }
 .filter-sidebar-left {
@@ -2050,6 +2077,16 @@ ul.cart-list > li.total > .btn:hover {
 }
 .cart-box-main {
 	padding: 70px 0px;
+}
+.cart-box-main td.name-pr span {
+	font-weight: 700;
+	font-size: 18px;
+	color: #010101;
+	transition: all 0.3s ease-in-out;
+	cursor: pointer;
+}
+.cart-box-main td.name-pr span:hover {
+	color: #40a9ff;
 }
 .table-main table thead {
 	background: #d33b33;

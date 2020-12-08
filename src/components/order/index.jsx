@@ -29,18 +29,18 @@ const useStyles = makeStyles(theme => ({
 		marginRight: 20
 	},
 	username: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: theme.typography.pxToRem(15),
 		color: theme.palette.text.secondary,
 		marginRight: 40
 	},
 	quantity: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: theme.typography.pxToRem(15),
 		color: '#d33b33'
 	},
 	total: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		lineHeight: 'normal',
 		fontSize: 18,
 		color: '#d33b33'
@@ -50,16 +50,16 @@ const useStyles = makeStyles(theme => ({
 		marginBottom: 20
 	},
 	title: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: 18,
 		color: '#d33b33'
 	},
 	address: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: '#666666 !important'
 	},
 	date: {
-		fontFamily: 'Quattrocento Sans',
+		fontFamily: 'Montserrat',
 		fontSize: theme.typography.pxToRem(15),
 		color: theme.palette.text.secondary,
 		marginLeft: 60
@@ -139,7 +139,7 @@ const Order = ({ orders, fetchOrder }) => {
 											</Typography>
 										</CardContent>
 									</Card>
-									{order.statusId !== 4 && (
+									{order.statusId === 1 && (
 										<>
 											<Divider className={classes.line} />
 											<button
@@ -147,7 +147,7 @@ const Order = ({ orders, fetchOrder }) => {
 												onClick={async () => {
 													console.log('statusId: ', order.statusId);
 													try {
-														const statusId = order.statusId + 1;
+														const statusId = 2;
 														const response = await orderAPI.editStatus(
 															{
 																statusId
@@ -155,15 +155,34 @@ const Order = ({ orders, fetchOrder }) => {
 															order.id
 														);
 														await fetchOrder();
-														showSuccess('Edited successfully.');
+														showSuccess('Đã xác nhận đơn hàng');
 													} catch (error) {
-														showError('Failed to edit.');
+														showError('Không thành công');
 													}
 												}}
 											>
-												{order.statusId === 1 && 'Xác nhận đơn hàng'}
-												{order.statusId === 2 && 'Đang giao'}
-												{order.statusId === 3 && 'Đã giao'}
+												Xác nhận đơn hàng
+											</button>
+											<button
+												className='order-action reject'
+												onClick={async () => {
+													console.log('statusId: ', order.statusId);
+													try {
+														const statusId = 5;
+														const response = await orderAPI.editStatus(
+															{
+																statusId
+															},
+															order.id
+														);
+														await fetchOrder();
+														showSuccess('Đã từ chối đơn hàng');
+													} catch (error) {
+														showError('Không thành công');
+													}
+												}}
+											>
+												Từ chối đơn hàng
 											</button>
 										</>
 									)}

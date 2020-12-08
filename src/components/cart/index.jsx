@@ -152,19 +152,28 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 																></Checkbox>
 															</td>
 															<td className='thumbnail-img'>
-																<a href='/'>
+																<span>
 																	<img
 																		className='img-fluid'
 																		src={detail.product.images[0]?.path}
 																		alt=''
 																	/>
-																</a>
+																</span>
 															</td>
 															<td className='name-pr'>
-																<a href='/'>{detail.product.name}</a>
+																<span
+																	onClick={() =>
+																		history.push({
+																			pathname: '/product-detail',
+																			search: `?id=${detail.productId}`
+																		})
+																	}
+																>
+																	{detail.product.name}
+																</span>
 															</td>
 															<td className='price-pr'>
-																<p>{detail.price}</p>
+																<p>${detail.price}</p>
 															</td>
 															<td className='quantity-box'>
 																<input
@@ -192,7 +201,7 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 																/>
 															</td>
 															<td className='total-pr'>
-																<p>{detail.price * detail.quantity}</p>
+																<p>${detail.price * detail.quantity}</p>
 															</td>
 															<td className='remove-pr'>
 																<button
@@ -206,7 +215,7 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 																				}
 																			);
 																			await fetchCart();
-																			showSuccess('Deleted successfully.');
+																			showSuccess('Xóa sản phẩm khỏi giỏ hàng');
 																		} catch (error) {
 																			showError('Failed to delete');
 																		}
@@ -258,7 +267,7 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 							<hr />
 							<div className='d-flex gr-total'>
 								<h5>Tổng tiền</h5>
-								<div className='ml-auto h5'>{calTotal(cartDetails)}</div>
+								<div className='ml-auto h5'>${calTotal(cartDetails)}</div>
 							</div>
 							<hr />{' '}
 						</div>

@@ -13,8 +13,8 @@ const productAPI = {
 		const url = `/products/category/${categoryId}`;
 		return apiClient.get(url, options);
 	},
-	getByType: (typeId, options = {}) => {
-		const url = `/products/type/${typeId}`;
+	getByType: (options = {}) => {
+		const url = `/products/type`;
 		return apiClient.get(url, options);
 	},
 	get: id => {

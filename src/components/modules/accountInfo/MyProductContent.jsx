@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core';
 import TitleBox from 'components/titleBox';
 import MyProduct from 'components/myProduct';
 import AddProduct from 'components/myProduct/addProduct';
+import EditProduct from 'components/myProduct/editProduct';
 import { localAuthenticate } from 'utils/localAuth';
 import useNotification from 'utils/hooks/notification';
 import clsx from 'clsx';
@@ -24,6 +25,10 @@ const MyProductContent = () => {
 	const { isAuthenticated, tokenInfo } = localAuthenticate();
 	const { showSuccess, showError } = useNotification();
 	const [activePage, setActivePage] = useState(1);
+	const [showEditProduct, setShowEditProduct] = useState({
+		isShow: false,
+		productId: null
+	});
 	const [pagination, setPagination] = useState({
 		activePage: 1,
 		itemsCountPerPage: 0,
@@ -57,6 +62,15 @@ const MyProductContent = () => {
 		}
 	};
 
+	const fetchOneProduct = async id => {
+		try {
+			const response = await productAPI.get(id);
+			setProducts(response.data.product);
+		} catch (error) {
+			console.log('Failed to fetch products: ', error);
+		}
+	};
+
 	useEffect(() => {
 		fetchProduct();
 	}, [pagination.activePage]);
@@ -74,6 +88,13 @@ const MyProductContent = () => {
 		}
 	};
 
+	const toggleEditProduct = id => {
+		setShowEditProduct({
+			isShow: true,
+			productId: id
+		});
+	};
+
 	return (
 		<>
 			<TitleBox parent='Trang chủ' children='Sản phẩm của tôi' path='/' />
@@ -86,6 +107,7 @@ const MyProductContent = () => {
 										key={index}
 										product={{ ...product }}
 										handleDeleteProduct={handleDeleteProduct}
+										toggleEditProduct={() => toggleEditProduct(product.id)}
 									/>
 							  ))
 							: 'Chưa có sản phẩm nào'}
@@ -97,7 +119,16 @@ const MyProductContent = () => {
 						)}
 					</div>
 					<div className='col-lg-6 col-md-12'>
-						<AddProduct fetchProduct={fetchProduct} />
+						{showEditProduct.isShow ? (
+							<EditProduct
+								fetchProduct={fetchProduct}
+								product={
+									products.filter(p => p.id === showEditProduct.productId)[0]
+								}
+							/>
+						) : (
+							<AddProduct fetchProduct={fetchProduct} />
+						)}
 					</div>
 				</div>
 			</div>

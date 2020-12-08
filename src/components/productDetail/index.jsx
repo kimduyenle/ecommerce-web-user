@@ -139,7 +139,7 @@ const ProductDetail = ({
 								{({ isSubmitting }) => (
 									<Form>
 										<h2>{name}</h2>
-										<h5> {price}</h5>
+										<h5>${price}</h5>
 										<p className='available-stock'>
 											<span>
 												{' '}

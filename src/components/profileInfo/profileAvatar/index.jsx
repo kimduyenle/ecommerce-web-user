@@ -26,33 +26,30 @@ const useStyles = makeStyles(() => ({
 	avatar: {
 		height: 200,
 		width: 200,
-		marginBottom: 8
+		marginBottom: 8,
+		marginLeft: 'auto',
+		marginRight: 'auto'
 	},
 	button: {
+		minWidth: 30,
+		width: 30,
+		height: 30,
 		backgroundColor: '#122230',
 		fontSize: 14,
 		'&:hover': {
 			backgroundColor: '#122230ed'
 		}
+	},
+	group: {
+		marginLeft: 'auto',
+		marginRight: 'auto',
+		width: 'fit-content'
 	}
 }));
 
 const ProfileAvatar = ({ className, user, onFileUpload, ...rest }) => {
 	const classes = useStyles();
 	const [image, setImage] = useState({});
-	// const onFileUpload = async () => {
-	// 	try {
-	// 		if (image !== '') {
-	// 			let fileData = new FormData();
-	// 			fileData.set('image', image, `${image.lastModified}-${image.name}`);
-	// 			await userAPI.uploadAvatar(fileData, user.id);
-	// 			fetchUser();
-	// 			showSuccess('Editted successfully.');
-	// 		}
-	// 	} catch (error) {
-	// 		console.log('Failed to edit user: ', error);
-	// 	}
-	// };
 
 	return (
 		<Formik
@@ -64,53 +61,54 @@ const ProfileAvatar = ({ className, user, onFileUpload, ...rest }) => {
 		>
 			{({ isSubmitting }) => (
 				<Form>
-					<Card className={clsx(classes.root, className)} {...rest}>
+					{/* <Card className={clsx(classes.root, className)} {...rest}>
 						<CardContent>
-							<Box alignItems='center' display='flex' flexDirection='column'>
-								<Avatar className={classes.avatar} src={user.avatar} />
-								<Typography color='textPrimary' gutterBottom variant='h3'>
+							<Box alignItems='center' display='flex' flexDirection='column'> */}
+					<Avatar className={classes.avatar} src={user.avatar} />
+					{/* <Typography color='textPrimary' gutterBottom variant='h3'>
 									{user.username}
 								</Typography>
 							</Box>
 						</CardContent>
 						<Divider />
-						<CardActions className={classes.cardActions}>
-							<input
-								name='image'
-								className={classes.input}
-								id='contained-button-file'
-								type='file'
-								onChange={e => {
-									setImage(e.target.files[0]);
-								}}
-							/>
-							<label
-								htmlFor='contained-button-file'
-								style={{ marginLeft: 0, flexBasis: '45%', marginBottom: 0 }}
-							>
-								<Button
-									variant='contained'
-									color='primary'
-									component='span'
-									size='large'
-									className={classes.button}
-								>
-									Choose file
-								</Button>
-							</label>
+						<CardActions className={classes.cardActions}> */}
+					<input
+						name='image'
+						className={classes.input}
+						id='contained-button-file'
+						type='file'
+						onChange={e => {
+							setImage(e.target.files[0]);
+						}}
+					/>
+					<div className={classes.group}>
+						<label htmlFor='contained-button-file' style={{ marginBottom: 0 }}>
 							<Button
-								color='primary'
-								disabled={isSubmitting}
-								size='large'
-								type='submit'
 								variant='contained'
-								style={{ marginLeft: 0, flexBasis: '45%' }}
+								color='primary'
+								component='span'
+								size='small'
 								className={classes.button}
 							>
-								Upload
+								{/* Chọn ảnh */}
+								<i class='fas fa-file-image'></i>
 							</Button>
-						</CardActions>
-					</Card>
+						</label>
+						<Button
+							color='primary'
+							disabled={isSubmitting}
+							size='small'
+							type='submit'
+							variant='contained'
+							style={{ marginLeft: 10 }}
+							className={classes.button}
+						>
+							{/* Tải lên */}
+							<i class='fas fa-upload'></i>
+						</Button>
+					</div>
+					{/* </CardActions>
+					</Card> */}
 				</Form>
 			)}
 		</Formik>

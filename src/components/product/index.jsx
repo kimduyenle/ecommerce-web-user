@@ -70,7 +70,7 @@ const Product = ({
 			</div>
 			<div className='why-text'>
 				<h4>{name}</h4>
-				<h5>{price}</h5>
+				<h5>${price}</h5>
 			</div>
 		</div>
 	);

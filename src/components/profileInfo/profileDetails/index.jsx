@@ -16,7 +16,6 @@ import {
 import TextInput from 'components/inputs/TextInput';
 import userAPI from 'api/user';
 import useNotification from 'utils/hooks/notification';
-import ChangePassword from './ChangePassword';
 
 const useStyles = makeStyles(() => ({
 	root: {},
@@ -63,18 +62,17 @@ const ProfileDetails = ({ className, user, fetchUser, ...rest }) => {
 				{({ isSubmitting, values }) => (
 					<Form>
 						<Card>
-							<CardHeader title='Profile' />
-							<Divider />
 							<CardContent>
 								<Grid container spacing={3}>
 									<Grid item md={6} xs={12}>
 										<Field
-											label='Username'
+											label='Tên tài khoản'
 											margin='normal'
 											name='username'
 											component={TextInput}
 											fullWidth
 											variant='outlined'
+											size='small'
 										/>
 									</Grid>
 									<Grid item md={6} xs={12}>
@@ -85,26 +83,29 @@ const ProfileDetails = ({ className, user, fetchUser, ...rest }) => {
 											component={TextInput}
 											fullWidth
 											variant='outlined'
+											size='small'
 										/>
 									</Grid>
 									<Grid item md={6} xs={12}>
 										<Field
-											label='Phone number'
+											label='Số điện thoại'
 											margin='normal'
 											name='phoneNumber'
 											component={TextInput}
 											fullWidth
 											variant='outlined'
+											size='small'
 										/>
 									</Grid>
 									<Grid item md={6} xs={12}>
 										<Field
-											label='Address'
+											label='Địa chỉ'
 											margin='normal'
 											name='address'
 											component={TextInput}
 											fullWidth
 											variant='outlined'
+											size='small'
 										/>
 									</Grid>
 								</Grid>
@@ -117,14 +118,13 @@ const ProfileDetails = ({ className, user, fetchUser, ...rest }) => {
 									type='submit'
 									className={classes.button}
 								>
-									Save details
+									Lưu thông tin
 								</Button>
 							</Box>
 						</Card>
 					</Form>
 				)}
 			</Formik>
-			<ChangePassword userId={user.id} />
 		</>
 	);
 };

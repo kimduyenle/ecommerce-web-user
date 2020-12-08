@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory, useLocation, NavLink } from 'react-router-dom';
 import { bool } from 'prop-types';
 import { Menu, MenuItem, Button } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import logo from 'assets/images/logo.png';
+import logo from 'assets/images/logo1.png';
 import { localAuthenticate } from 'utils/localAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { getByUser } from 'features/cartSlice';
 import { getProfile } from 'features/userSlice';
 import calTotal from 'utils/calTotal';
+import { useSearch } from 'app/context/SearchContext';
 
 const Header = () => {
 	const [accountMenuOpen, setAccountMenu] = useState(false);
@@ -22,7 +23,7 @@ const Header = () => {
 	const { cart } = useSelector(state => state.cart);
 	const { user } = useSelector(state => state.user);
 	const pathname = useLocation().pathname;
-
+	const [openCart, setOpenCart] = useState(false);
 	const history = useHistory();
 	const { isAuthenticated, tokenInfo } = localAuthenticate();
 	// const [cart, setCart] = useState({
@@ -30,6 +31,8 @@ const Header = () => {
 	// 	cartDetails: []
 	// });
 	const dispatch = useDispatch();
+	const inputSearch = useRef(null);
+	const { search, searchChange } = useSearch();
 
 	useEffect(() => {
 		// fetchCart();
@@ -159,7 +162,12 @@ const Header = () => {
 								<img src={logo} className='logo' alt='' />
 							</a> */}
 							<NavLink to='/'>
-								<img src={logo} className='logo' alt='' />
+								<img
+									src={logo}
+									className='logo'
+									alt=''
+									style={{ height: 81 }}
+								/>
 							</NavLink>
 						</div>
 
@@ -173,7 +181,13 @@ const Header = () => {
 										type='text'
 										className='form-control'
 										placeholder='Tìm kiếm'
+										ref={inputSearch}
 									/>
+									<button
+										onClick={() => searchChange(inputSearch.current.value)}
+									>
+										<i className='fa fa-search'></i>
+									</button>
 								</div>
 							</div>
 						</div>
@@ -182,19 +196,19 @@ const Header = () => {
 							<ul>
 								{isAuthenticated && (
 									<li className='side-menu'>
-										<a href={pathname}>
+										<button onClick={() => setOpenCart(true)}>
 											<i className='fa fa-shopping-bag'></i>
 											<span className='badge'>{cart.cartDetails?.length}</span>
-										</a>
+										</button>
 									</li>
 								)}
 							</ul>
 						</div>
 					</div>
-					<div className='side'>
-						<a href='/' className='close-side'>
+					<div className={`side ${openCart && 'on'}`}>
+						<button className='close-side' onClick={() => setOpenCart(false)}>
 							<i className='fa fa-times'></i>
-						</a>
+						</button>
 						<li className='cart-box'>
 							<ul className='cart-list'>
 								{cart.cartDetails?.map((detail, index) => (
@@ -211,19 +225,19 @@ const Header = () => {
 										</h6>
 										<p>
 											{detail.quantity}x -{' '}
-											<span className='price'>{detail.price}</span>
+											<span className='price'>${detail.price}</span>
 										</p>
 									</li>
 								))}
 								<li className='total'>
-									<NavLink
+									<buton
 										className='btn btn-default hvr-hover btn-cart'
-										to='/cart'
+										onClick={() => history.push('/cart')}
 									>
 										Xem giỏ hàng
-									</NavLink>
+									</buton>
 									<span className='float-right'>
-										<strong>Tổng</strong>: {calTotal(cart.cartDetails)}
+										<strong>Tổng</strong>: ${calTotal(cart.cartDetails)}
 									</span>
 								</li>
 							</ul>

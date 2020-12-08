@@ -6,6 +6,7 @@ import { getByUser } from 'features/cartSlice';
 import { localAuthenticate } from 'utils/localAuth';
 import useNotification from 'utils/hooks/notification';
 import CPagination from 'components/cPagination';
+import { useSearch } from 'app/context/SearchContext';
 
 const ProductList = () => {
 	const { isAuthenticated } = localAuthenticate();
@@ -15,41 +16,51 @@ const ProductList = () => {
 	// const [cartId, setCartId] = useState('');
 	const { cart } = useSelector(state => state.cart);
 	const cartId = cart.id;
+	const [typeValue, setTypeValue] = useState(1);
+	const { search } = useSearch();
 	const { showError, showSuccess } = useNotification();
 	const dispatch = useDispatch();
-	// const [pagination, setPagination] = useState({
-	// 	activePage: 1,
-	// 	itemsCountPerPage: 0,
-	// 	totalItemsCount: 0
-	// });
+	const [pagination, setPagination] = useState({
+		activePage: 1,
+		itemsCountPerPage: 0,
+		totalItemsCount: 0
+	});
 
-	// const handlePageChange = pageNumber => {
-	// 	console.log(`active page is ${pageNumber}`);
-	// 	setPagination({
-	// 		...pagination,
-	// 		activePage: pageNumber
-	// 	});
-	// };
+	const handlePageChange = pageNumber => {
+		console.log(`active page is ${pageNumber}`);
+		setPagination({
+			...pagination,
+			activePage: pageNumber
+		});
+	};
 
 	useEffect(() => {
-		fetchProducts();
-		fetchLatestProducts();
-		fetchBestSellerProducts();
-	}, []);
+		fetchProductsByType();
 
-	const fetchProducts = async () => {
+		// fetchLatestProducts();
+		// fetchBestSellerProducts();
+	}, [pagination.activePage, typeValue, search]);
+
+	const fetchProductsByType = async () => {
 		try {
-			// const params = {
-			// 	page: pagination.activePage,
-			// 	limit: 10
-			// };
-			const response = await productAPI.getByType(1);
-			setProducts(response.data.products);
-			// setPagination({
-			// 	...pagination,
-			// 	itemsCountPerPage: params.limit,
-			// 	totalItemsCount: response.data.total
-			// });
+			const params = {
+				page: pagination.activePage,
+				limit: 12,
+				type: typeValue,
+				search: search
+			};
+			const response = await productAPI.getByType({ params: params });
+			const products = await response.data.dataInPage;
+
+			// const filteredProducts = products.filter(
+			// 	product => product.price >= value[0] && product.price <= value[1]
+			// );
+			setProducts(products);
+			setPagination({
+				...pagination,
+				itemsCountPerPage: params.limit,
+				totalItemsCount: response.data.total
+			});
 		} catch (error) {
 			console.log('Failed to fetch products: ', error);
 		}
@@ -110,11 +121,25 @@ const ProductList = () => {
 					<div className='col-lg-12'>
 						<div className='special-menu text-center'>
 							<div className='button-group filter-button-group'>
-								<button className='active' data-filter='.all'>
+								<button
+									className='active'
+									// data-filter='.all'
+									onClick={() => setTypeValue(1)}
+								>
 									Tất cả
 								</button>
-								<button data-filter='.top-featured'>Mới nhất</button>
-								<button data-filter='.best-seller'>Bán chạy</button>
+								<button
+									// data-filter='.top-featured'
+									onClick={() => setTypeValue(2)}
+								>
+									Mới nhất
+								</button>
+								<button
+									// data-filter='.best-seller'
+									onClick={() => setTypeValue(3)}
+								>
+									Bán chạy
+								</button>
 							</div>
 						</div>
 					</div>
@@ -137,7 +162,7 @@ const ProductList = () => {
 							/>
 						</div>
 					))}
-					{latestProducts.map((product, index) => (
+					{/* {latestProducts.map((product, index) => (
 						<div
 							className='col-lg-3 col-md-6 special-grid top-featured'
 							key={index}
@@ -176,11 +201,18 @@ const ProductList = () => {
 								fetchCart={fetchCart}
 							/>
 						</div>
-					))}
+					))} */}
 				</div>
-				{/* <div className='row'>
-					<CPagination {...pagination} handlePageChange={handlePageChange} />
-				</div> */}
+				{products.length > 0 && (
+					<div className='row'>
+						<div className='col-12'>
+							<CPagination
+								{...pagination}
+								handlePageChange={handlePageChange}
+							/>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

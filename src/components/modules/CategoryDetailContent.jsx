@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import qs from 'qs';
 import TitleBox from 'components/titleBox';
@@ -40,10 +40,6 @@ const useStyles = makeStyles({
 	}
 });
 
-const valuetext = value => {
-	return `${value}°C`;
-};
-
 const CategoryDetailContent = () => {
 	const classes = useStyles();
 	const history = useHistory();
@@ -57,6 +53,8 @@ const CategoryDetailContent = () => {
 	const [currentCategoryId, setCurrentCategoryId] = useState(id);
 	const dispatch = useDispatch();
 	const [sortValue, setSortValue] = useState(0);
+	const inputSearch = useRef(null);
+	const [searchStr, setSearchStr] = useState('');
 	const [pagination, setPagination] = useState({
 		activePage: 1,
 		itemsCountPerPage: 0,
@@ -82,7 +80,8 @@ const CategoryDetailContent = () => {
 			const params = {
 				page: pagination.activePage,
 				limit: 9,
-				type: sortValue
+				type: sortValue,
+				search: searchStr
 			};
 			const response = await productAPI.getByCategory(id, { params: params });
 			const products = await response.data.dataInPage;
@@ -107,7 +106,7 @@ const CategoryDetailContent = () => {
 
 	useEffect(() => {
 		fetchProductsByCategory(currentCategoryId, value);
-	}, [pagination.activePage, sortValue, currentCategoryId, value]);
+	}, [pagination.activePage, sortValue, currentCategoryId, value, searchStr]);
 
 	useEffect(() => {
 		fetchCategories();
@@ -134,17 +133,17 @@ const CategoryDetailContent = () => {
 						<div className='col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left'>
 							<div className='product-categori'>
 								<div className='search-product'>
-									<form action='#'>
-										<input
-											className='form-control'
-											placeholder='Tìm kiếm'
-											type='text'
-										/>
-										<button type='submit'>
-											{' '}
-											<i className='fa fa-search'></i>{' '}
-										</button>
-									</form>
+									<input
+										className='form-control'
+										placeholder='Tìm kiếm'
+										type='text'
+										ref={inputSearch}
+									/>
+									<button
+										onClick={() => setSearchStr(inputSearch.current.value)}
+									>
+										<i className='fa fa-search'></i>
+									</button>
 								</div>
 								<div className='filter-sidebar-left'>
 									<div className='title-left'>
@@ -189,7 +188,6 @@ const CategoryDetailContent = () => {
 												aria-labelledby='slider-range'
 												max={1000}
 												min={1}
-												getAriaValueText={valuetext}
 											/>
 										</div>
 										<p>

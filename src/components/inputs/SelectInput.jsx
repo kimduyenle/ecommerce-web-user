@@ -17,11 +17,11 @@ const useStyles = makeStyles(theme => ({
 		background: '#fff',
 		padding: '0 6px',
 		fontSize: 15,
-		fontFamily: 'Quattrocento Sans'
+		fontFamily: 'Montserrat'
 	},
 	item: {
 		fontSize: 15,
-		fontFamily: 'Quattrocento Sans'
+		fontFamily: 'Montserrat'
 	}
 }));
 

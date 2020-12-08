@@ -61,7 +61,7 @@ const getBase64 = file => {
 	});
 };
 
-const AddProduct = ({ fetchProduct }) => {
+const EditProduct = ({ fetchProduct, product }) => {
 	const classes = useStyles();
 	const dispatch = useDispatch();
 	const { showError, showSuccess } = useNotification();
@@ -104,24 +104,33 @@ const AddProduct = ({ fetchProduct }) => {
 		return false;
 	};
 
+	useEffect(() => {
+		const fileList = product.images.map(image => {
+			return {
+				uid: image.id,
+				url: image.path
+			};
+		});
+		setData({
+			...uploadData,
+			fileList
+		});
+	}, [product]);
+
 	// end upload
 
 	const onFileUpload = async id => {
 		try {
-			if (images) {
-				for (let i = 0; i < images.length; i++) {
-					if (images[i] !== '') {
-						let fileData = new FormData();
-						fileData.set(
-							'image',
-							images[i],
-							`${images[i].lastModified}-${images[i].name}`
-						);
-						await imageAPI.uploadProductImage(fileData, id);
-					}
+			for (let i = 0; i < images.length; i++) {
+				if (images[i] !== '') {
+					let fileData = new FormData();
+					fileData.set(
+						'image',
+						images[i],
+						`${images[i].lastModified}-${images[i].name}`
+					);
+					await imageAPI.uploadProductImage(fileData, id);
 				}
-			} else {
-				await imageAPI.setDefaultImage(id);
 			}
 		} catch (error) {
 			console.log('Failed to edit user: ', error);
@@ -140,6 +149,9 @@ const AddProduct = ({ fetchProduct }) => {
 		fetchCategories();
 	}, []);
 
+	console.log('filelist: ', uploadData.fileList);
+	console.log('images', images);
+
 	return (
 		<Page className={classes.root} title='Add product'>
 			<Box
@@ -152,11 +164,11 @@ const AddProduct = ({ fetchProduct }) => {
 					<Formik
 						enableReinitialize={true}
 						initialValues={{
-							categoryId: '',
-							name: '',
-							description: '',
-							quantity: '',
-							price: ''
+							categoryId: product.categoryId || '',
+							name: product.name || '',
+							description: product.description || '',
+							quantity: product.quantity || '',
+							price: product.price || ''
 						}}
 						validationSchema={Yup.object().shape({
 							categoryId: Yup.number().required('Category is required'),
@@ -169,16 +181,19 @@ const AddProduct = ({ fetchProduct }) => {
 							{ setSubmitting }
 						) => {
 							try {
-								const response = await productAPI.add({
-									categoryId,
-									name,
-									description,
-									quantity,
-									price
-								});
-								await onFileUpload(response.data.id);
+								const response = await productAPI.edit(
+									{
+										categoryId,
+										name,
+										description,
+										quantity,
+										price
+									},
+									product.id
+								);
+								await onFileUpload(product.id);
 								await fetchProduct();
-								showSuccess('Thêm sản phẩm thành công');
+								showSuccess('Chỉnh sửa sản phẩm thành công');
 								// history.push(routes.products.path);
 							} catch (error) {
 								console.log('Failed to add product: ', error);
@@ -193,7 +208,7 @@ const AddProduct = ({ fetchProduct }) => {
 										variant='h6'
 										className={classes.title}
 									>
-										Thêm sản phẩm
+										Chỉnh sửa sản phẩm {product.name}
 									</Typography>
 								</Box>
 								<Field
@@ -267,7 +282,7 @@ const AddProduct = ({ fetchProduct }) => {
 										variant='contained'
 										className={classes.button}
 									>
-										Thêm
+										Chỉnh sửa
 									</Button>
 								</Box>
 							</Form>
@@ -279,4 +294,4 @@ const AddProduct = ({ fetchProduct }) => {
 	);
 };
 
-export default AddProduct;
+export default EditProduct;

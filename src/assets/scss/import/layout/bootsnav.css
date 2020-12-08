@@ -384,6 +384,11 @@ body.on-side {
 	font-size: 16px;
 }
 
+button.close-side {
+	background-color: transparent;
+	border: none;
+}
+
 .side .widget {
 	position: relative;
 	z-index: 1;

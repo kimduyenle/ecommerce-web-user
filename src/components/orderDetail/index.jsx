@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
 		flex: '1 0 auto'
 	},
 	text: {
-		fontFamily: 'Quattrocento Sans'
+		fontFamily: 'Montserrat'
 	},
 	name: {
 		fontWeight: 700,
@@ -87,7 +87,7 @@ const useStyles = makeStyles(theme => ({
 	content: {
 		'& > *': {
 			color: '#666666',
-			fontFamily: 'Quattrocento Sans'
+			fontFamily: 'Montserrat'
 		}
 	}
 }));

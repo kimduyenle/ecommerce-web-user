@@ -21,6 +21,11 @@ const CategoryList = () => {
 		<div className='categories-shop'>
 			<div className='container'>
 				<div className='row'>
+					<div className='title-all text-center w-100'>
+						<h1>DANH MỤC</h1>
+					</div>
+				</div>
+				<div className='row'>
 					{categories.map((category, index) => (
 						<div className='col-lg-2 col-md-2 col-sm-3 col-xs-3' key={index}>
 							<Category category={category} />
