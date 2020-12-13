@@ -1,10 +1,31 @@
-import React from 'react';
-import * as Yup from 'yup';
-import { Formik, Form, Field } from 'formik';
-import NumberInput from 'components/inputs/NumberInput';
-import useNotification from 'utils/hooks/notification';
-import cartDetailAPI from 'api/cartDetail';
-import ReviewList from '../reviewList';
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { Modal } from "antd";
+import "antd/dist/antd.css";
+import useNotification from "utils/hooks/notification";
+import cartDetailAPI from "api/cartDetail";
+import ReviewList from "../reviewList";
+
+const error = (title, content, ok, onOk) => {
+	Modal.error({
+		title: title,
+		content: content,
+		okText: ok,
+		onOk: onOk
+	});
+};
+
+// const confirm = (title, content, ok, cancel, onOk) => {
+// 	Modal.confirm({
+// 		title: title,
+// 		content: content,
+// 		okText: ok,
+// 		cancelText: cancel,
+// 		onOk: onOk,
+// 		onCancel() {}
+// 	});
+// };
 
 const ProductDetail = ({
 	id,
@@ -14,7 +35,7 @@ const ProductDetail = ({
 	images,
 	user,
 	category,
-	quantity,
+	avaQuantity,
 	sold,
 	cartId,
 	isAuthenticated,
@@ -22,171 +43,242 @@ const ProductDetail = ({
 	reviews
 }) => {
 	const { showError, showSuccess } = useNotification();
+	const { cart } = useSelector(state => state.cart);
+	const history = useHistory();
+	const cartDetails = cart.cartDetails;
+	const [currentQuantity, setCurrentQuantity] = useState(1);
 
 	return (
-		<div className='shop-detail-box-main'>
-			<div className='container'>
-				<div className='row'>
-					<div className='col-xl-5 col-lg-5 col-md-6'>
+		<div className="shop-detail-box-main">
+			<div className="container">
+				<div className="row">
+					<div className="col-xl-5 col-lg-5 col-md-6">
 						<div
-							id='carousel-example-1'
-							className='single-product-slider carousel slide'
-							data-ride='carousel'
+							id="carousel-example-1"
+							className="single-product-slider carousel slide"
+							data-ride="carousel"
 						>
-							<div className='carousel-inner' role='listbox'>
-								<div className='carousel-item active'>
-									{' '}
+							<div className="carousel-inner" role="listbox">
+								<div className="carousel-item active">
+									{" "}
 									<img
-										className='d-block w-100'
+										className="d-block w-100"
 										src={
 											images.length > 0
 												? images[0].path
-												: 'https://picsum.photos/400'
+												: "https://picsum.photos/400"
 										}
-										alt='Slide 1'
-									/>{' '}
+										alt="Slide 1"
+									/>{" "}
 								</div>
 								{images.slice(1).map((image, index) => (
-									<div className='carousel-item' key={index}>
-										{' '}
+									<div className="carousel-item" key={index}>
+										{" "}
 										<img
-											className='d-block w-100'
+											className="d-block w-100"
 											src={image.path}
 											alt={`Slide ${index + 2}`}
-										/>{' '}
+										/>{" "}
 									</div>
 								))}
 							</div>
 							<a
-								className='carousel-control-prev'
-								href='#carousel-example-1'
-								role='button'
-								data-slide='prev'
+								className="carousel-control-prev"
+								href="#carousel-example-1"
+								role="button"
+								data-slide="prev"
 							>
-								<i className='fa fa-angle-left' aria-hidden='true'></i>
-								<span className='sr-only'>Previous</span>
+								<i className="fa fa-angle-left" aria-hidden="true"></i>
+								<span className="sr-only">Previous</span>
 							</a>
 							<a
-								className='carousel-control-next'
-								href='#carousel-example-1'
-								role='button'
-								data-slide='next'
+								className="carousel-control-next"
+								href="#carousel-example-1"
+								role="button"
+								data-slide="next"
 							>
-								<i className='fa fa-angle-right' aria-hidden='true'></i>
-								<span className='sr-only'>Next</span>
+								<i className="fa fa-angle-right" aria-hidden="true"></i>
+								<span className="sr-only">Next</span>
 							</a>
-							<ol className='carousel-indicators'>
+							<ol className="carousel-indicators">
 								<li
-									data-target='#carousel-example-1'
-									data-slide-to='0'
-									className='active'
+									data-target="#carousel-example-1"
+									data-slide-to="0"
+									className="active"
 								>
 									<img
-										className='d-block w-100 img-fluid'
+										className="d-block w-100 img-fluid"
 										src={
 											images.length > 0
 												? images[0].path
-												: 'https://picsum.photos/400'
+												: "https://picsum.photos/400"
 										}
-										alt=''
+										alt=""
 									/>
 								</li>
 								{images.slice(1).map((image, index) => (
 									<li
-										data-target='#carousel-example-1'
+										data-target="#carousel-example-1"
 										data-slide-to={index + 1}
 										key={index}
 									>
 										<img
-											className='d-block w-100 img-fluid'
+											className="d-block w-100 img-fluid"
 											src={image.path}
-											alt=''
+											alt=""
 										/>
 									</li>
 								))}
 							</ol>
 						</div>
 					</div>
-					<div className='col-xl-7 col-lg-7 col-md-6'>
-						<div className='single-product-details'>
-							<Formik
-								enableReinitialize={true}
-								initialValues={{
-									quantity: 1
-								}}
-								validationSchema={Yup.object().shape({
-									quantity: Yup.number().required('Quantity is required')
-								})}
-								onSubmit={async ({ quantity }, { setSubmitting }) => {
-									if (!isAuthenticated) {
-										showError('Vui lòng đăng nhập để tiếp tục');
-										return;
-									}
-									try {
-										const response = await cartDetailAPI.add({
-											productId: id,
-											cartId,
-											quantity,
-											price
-										});
-										await fetchCart();
-										showSuccess('Đã thêm vào giỏ hàng');
-									} catch (error) {
-										showError('Không thể thêm vào giỏ hàng');
-									}
-								}}
-							>
-								{({ isSubmitting }) => (
-									<Form>
-										<h2>{name}</h2>
-										<h5>${price}</h5>
-										<p className='available-stock'>
-											<span>
-												{' '}
-												Số lượng: có sẵn {quantity} /
-												<span style={{ color: '#d33b33' }}> đã bán {sold}</span>
-											</span>
-										</p>
-										<h4>Mô tả sản phẩm:</h4>
-										<p>{description}</p>
-										<ul>
-											<li>
-												<div className='form-group quantity-box'>
-													<label className='control-label'>Số lượng</label>
-													<Field
-														className='form-control'
-														min='1'
-														max={quantity}
-														name='quantity'
-														component={NumberInput}
-													/>
-												</div>
-											</li>
-										</ul>
+					<div className="col-xl-7 col-lg-7 col-md-6">
+						<div className="single-product-details">
+							<h2>{name}</h2>
+							<h5>${price}</h5>
+							<p className="available-stock">
+								<span>
+									{" "}
+									Số lượng: có sẵn {avaQuantity} /
+									<span style={{ color: "#d33b33" }}> đã bán {sold}</span>
+								</span>
+							</p>
+							<h4>Mô tả sản phẩm:</h4>
+							<p>{description}</p>
+							<ul>
+								<li>
+									<div className="form-group quantity-box">
+										<label className="control-label">Số lượng</label>
+										<input
+											type="number"
+											value={currentQuantity}
+											min="1"
+											max={avaQuantity}
+											step="1"
+											className="form-control"
+											onKeyDown={e => {
+												if (e.key === "." || e.key === "-" || e.key === "+") {
+													e.preventDefault();
+												}
+											}}
+											onChange={e =>
+												setCurrentQuantity(parseInt(e.target.value))
+											}
+										/>
+									</div>
+								</li>
+							</ul>
 
-										<div className='price-box-bar'>
-											<div className='cart-and-bay-btn'>
-												<a
+							<div className="price-box-bar">
+								<div className="cart-and-bay-btn">
+									{/* <a
 													className='btn hvr-hover'
 													data-fancybox-close=''
 													href='/'
 												>
 													Mua ngay
-												</a>
-												<button className='btn hvr-hover' type='submit'>
-													Thêm vào giỏ hàng
-												</button>
-											</div>
-										</div>
-									</Form>
-								)}
-							</Formik>
-							<div className='shop-info'>Thông tin cửa hàng:</div>
-							<div className='owner'>
-								<div className='avatar'>
-									<img src={user.avatar} alt='' />
+												</a> */}
+									<button
+										className="btn hvr-hover"
+										onClick={async () => {
+											if (!isAuthenticated) {
+												showError("Vui lòng đăng nhập để tiếp tục");
+												return;
+											}
+											if (currentQuantity === "") {
+												error("Lỗi", "Vui lòng nhập số lượng", "Đồng ý", () => {
+													setCurrentQuantity(1);
+												});
+												return;
+											}
+											const index = cartDetails.findIndex(
+												detail =>
+													detail.productId === id && detail.cartId === cartId
+											);
+											let allowQuantity;
+											if (index !== -1) {
+												allowQuantity =
+													avaQuantity - cartDetails[index].quantity;
+												if (currentQuantity < 1) {
+													error(
+														"Lỗi",
+														"Bạn phải chọn tối thiểu 1 sản phẩm",
+														"Đồng ý",
+														() => {
+															setCurrentQuantity(1);
+														}
+													);
+													return;
+												}
+												if (allowQuantity < 1) {
+													error(
+														"Lỗi",
+														"Bạn không thể thêm sản phẩm",
+														"Đồng ý",
+														() => {}
+													);
+													return;
+												}
+												if (currentQuantity > allowQuantity) {
+													error(
+														"Lỗi",
+														`Bạn chỉ có thể mua tối đa thêm ${allowQuantity} sản phẩm`,
+														"Đồng ý",
+														() => {
+															setCurrentQuantity(allowQuantity);
+														}
+													);
+													return;
+												}
+											} else {
+												if (currentQuantity < 1) {
+													error(
+														"Lỗi",
+														"Bạn phải chọn tối thiểu 1 sản phẩm",
+														"Đồng ý",
+														() => {
+															setCurrentQuantity(1);
+														}
+													);
+													return;
+												}
+												if (currentQuantity > avaQuantity) {
+													error(
+														"Lỗi",
+														`Bạn chỉ có thể mua tối đa ${avaQuantity} sản phẩm`,
+														"Đồng ý",
+														() => {
+															setCurrentQuantity(avaQuantity);
+														}
+													);
+													return;
+												}
+											}
+											try {
+												const response = await cartDetailAPI.add({
+													productId: id,
+													cartId,
+													quantity: currentQuantity,
+													price
+												});
+												await fetchCart();
+												showSuccess("Đã thêm vào giỏ hàng");
+											} catch (error) {
+												showError("Không thể thêm vào giỏ hàng");
+											}
+										}}
+									>
+										Thêm vào giỏ hàng
+									</button>
 								</div>
-								<div className='info'>
+							</div>
+
+							<div className="shop-info">Thông tin cửa hàng:</div>
+							<div className="owner">
+								<div className="avatar">
+									<img src={user.avatar} alt="" />
+								</div>
+								<div className="info">
 									<div>{user.username}</div>
 									<div>{user.address}</div>
 									<div>{user.phoneNumber}</div>
@@ -197,179 +289,16 @@ const ProductDetail = ({
 					</div>
 				</div>
 
-				<div className='row my-5'>
-					<div className='col-12'>
-						<div className='review-title'>Đánh giá sản phẩm:</div>
+				<div className="row my-5">
+					<div className="col-12">
+						<div className="review-title">Đánh giá sản phẩm:</div>
 						{reviews.length > 0 ? (
 							<ReviewList reviews={reviews} />
 						) : (
-							'Chưa có đánh giá'
+							"Chưa có đánh giá"
 						)}
 					</div>
 				</div>
-
-				{/* <div className="row my-5">
-                <div className="col-lg-12">
-                    <div className="title-all text-center">
-                        <h1>Featured Products</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet lacus enim.</p>
-                    </div>
-                    <div className="featured-products-box owl-carousel owl-theme">
-                        <div className="item">
-                            <div className="products-single fix">
-                                <div className="box-img-hover">
-                                    <img src="images/img-pro-01.jpg" className="img-fluid" alt="Image">
-                                    <div className="mask-icon">
-                                        <ul>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
-                                        </ul>
-                                        <a className="cart" href="/">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div className="why-text">
-                                    <h4>Lorem ipsum dolor sit amet</h4>
-                                    <h5> $9.79</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="item">
-                            <div className="products-single fix">
-                                <div className="box-img-hover">
-                                    <img src="images/img-pro-02.jpg" className="img-fluid" alt="Image">
-                                    <div className="mask-icon">
-                                        <ul>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
-                                        </ul>
-                                        <a className="cart" href="/">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div className="why-text">
-                                    <h4>Lorem ipsum dolor sit amet</h4>
-                                    <h5> $9.79</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="item">
-                            <div className="products-single fix">
-                                <div className="box-img-hover">
-                                    <img src="images/img-pro-03.jpg" className="img-fluid" alt="Image">
-                                    <div className="mask-icon">
-                                        <ul>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
-                                        </ul>
-                                        <a className="cart" href="/">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div className="why-text">
-                                    <h4>Lorem ipsum dolor sit amet</h4>
-                                    <h5> $9.79</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="item">
-                            <div className="products-single fix">
-                                <div className="box-img-hover">
-                                    <img src="images/img-pro-04.jpg" className="img-fluid" alt="Image">
-                                    <div className="mask-icon">
-                                        <ul>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
-                                        </ul>
-                                        <a className="cart" href="/">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div className="why-text">
-                                    <h4>Lorem ipsum dolor sit amet</h4>
-                                    <h5> $9.79</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="item">
-                            <div className="products-single fix">
-                                <div className="box-img-hover">
-                                    <img src="images/img-pro-01.jpg" className="img-fluid" alt="Image">
-                                    <div className="mask-icon">
-                                        <ul>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
-                                        </ul>
-                                        <a className="cart" href="/">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div className="why-text">
-                                    <h4>Lorem ipsum dolor sit amet</h4>
-                                    <h5> $9.79</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="item">
-                            <div className="products-single fix">
-                                <div className="box-img-hover">
-                                    <img src="images/img-pro-02.jpg" className="img-fluid" alt="Image">
-                                    <div className="mask-icon">
-                                        <ul>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
-                                        </ul>
-                                        <a className="cart" href="/">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div className="why-text">
-                                    <h4>Lorem ipsum dolor sit amet</h4>
-                                    <h5> $9.79</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="item">
-                            <div className="products-single fix">
-                                <div className="box-img-hover">
-                                    <img src="images/img-pro-03.jpg" className="img-fluid" alt="Image">
-                                    <div className="mask-icon">
-                                        <ul>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
-                                        </ul>
-                                        <a className="cart" href="/">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div className="why-text">
-                                    <h4>Lorem ipsum dolor sit amet</h4>
-                                    <h5> $9.79</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="item">
-                            <div className="products-single fix">
-                                <div className="box-img-hover">
-                                    <img src="images/img-pro-04.jpg" className="img-fluid" alt="Image">
-                                    <div className="mask-icon">
-                                        <ul>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
-                                            <li><a href="/" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
-                                        </ul>
-                                        <a className="cart" href="/">Add to Cart</a>
-                                    </div>
-                                </div>
-                                <div className="why-text">
-                                    <h4>Lorem ipsum dolor sit amet</h4>
-                                    <h5> $9.79</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> */}
 			</div>
 		</div>
 	);

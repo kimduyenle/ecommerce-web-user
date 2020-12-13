@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import * as Yup from 'yup';
-import { Formik, Form, Field } from 'formik';
-import TextInput from 'components/inputs/TextInput';
-import RadioGroupInput from 'components/inputs/RadioGroupInput';
-import calTotal from 'utils/calTotal';
-import orderAPI from 'api/order';
-import orderDetailAPI from 'api/orderDetail';
-import useNotification from 'utils/hooks/notification';
-import { provinceData, districtData } from 'utils/province';
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import * as Yup from "yup";
+import { Formik, Form, Field } from "formik";
+import TextInput from "components/inputs/TextInput";
+import RadioGroupInput from "components/inputs/RadioGroupInput";
+import calTotal from "utils/calTotal";
+import orderAPI from "api/order";
+import orderDetailAPI from "api/orderDetail";
+import useNotification from "utils/hooks/notification";
+import { provinceData, districtData } from "utils/province";
+import cartDetailAPI from "api/cartDetail";
 
-import 'antd/dist/antd.css';
-import { Select } from 'antd';
+import "antd/dist/antd.css";
+import { Select } from "antd";
 const { Option } = Select;
 
 const Checkout = ({ cartDetails = [], trans = [] }) => {
@@ -38,14 +39,14 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 		setSecondCity(value);
 	};
 	return (
-		<div className='cart-box-main'>
-			<div className='container'>
+		<div className="cart-box-main">
+			<div className="container">
 				<Formik
 					enableReinitialize={true}
 					initialValues={{
-						paymentMethod: 'Thanh toán khi nhận hàng',
-						deliveryPhoneNumber: user.phoneNumber || '',
-						deliveryAddress: user.address || '',
+						paymentMethod: "Thanh toán khi nhận hàng",
+						deliveryPhoneNumber: user.phoneNumber || "",
+						deliveryAddress: user.address || "",
 						province: province,
 						district: secondCity,
 						transId: transId
@@ -53,10 +54,10 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 					validationSchema={Yup.object().shape({
 						deliveryPhoneNumber: Yup.string()
 							.max(255)
-							.required('Số điện thoại là bắt buộc'),
+							.required("Số điện thoại là bắt buộc"),
 						deliveryAddress: Yup.string()
 							.max(255)
-							.required('Địa chỉ chi tiết là bắt buộc')
+							.required("Địa chỉ chi tiết là bắt buộc")
 					})}
 					onSubmit={async (
 						{
@@ -70,7 +71,14 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 						{ setSubmitting }
 					) => {
 						try {
+							let statusId;
+							if (paymentMethod === "Thanh toán khi nhận hàng") {
+								statusId = 1;
+							} else {
+								statusId = 7;
+							}
 							const response = await orderAPI.add({
+								statusId: statusId,
 								paymentMethod,
 								deliveryPhoneNumber,
 								deliveryAddress,
@@ -86,31 +94,42 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 									quantity: detail.quantity,
 									price: detail.price
 								});
+								await cartDetailAPI.delete({
+									productId: detail.productId,
+									cartId: detail.cartId
+								});
 							}
-							history.push('/cart');
-							showSuccess('Đặt hàng thành công');
+							if (paymentMethod === "Thanh toán khi nhận hàng") {
+								history.push("/cart");
+							} else {
+								history.push({
+									pathname: "/paypal",
+									search: `id=${orderId}&total=${calTotal(cartDetails)}`
+								});
+							}
+							showSuccess("Đặt hàng thành công");
 						} catch (error) {
-							showError('Đặt hàng không thành công');
+							showError("Đặt hàng không thành công");
 						}
 					}}
 				>
 					{({ isSubmitting, values }) => (
 						<>
 							<Form>
-								<div className='row'>
-									<div className='col-sm-6 col-lg-6 mb-3'>
-										<div className='checkout-address'>
-											<div className='title-left'>
+								<div className="row">
+									<div className="col-sm-6 col-lg-6 mb-3">
+										<div className="checkout-address">
+											<div className="title-left">
 												<h3>Địa chỉ nhận hàng</h3>
 											</div>
 											{/* <form className='needs-validation' noValidate> */}
-											<div className='mb-3'>
-												<label htmlFor='username'>Tên tài khoản *</label>
-												<div className='input-group'>
+											<div className="mb-3">
+												<label htmlFor="username">Tên tài khoản *</label>
+												<div className="input-group">
 													<input
-														type='text'
-														className='form-control'
-														id='username'
+														type="text"
+														className="form-control"
+														id="username"
 														readOnly
 														value={user.username}
 													/>
@@ -123,12 +142,12 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 														</div> */}
 												</div>
 											</div>
-											<div className='mb-3'>
-												<label htmlFor='email'>Email *</label>
+											<div className="mb-3">
+												<label htmlFor="email">Email *</label>
 												<input
-													type='email'
-													className='form-control'
-													id='email'
+													type="email"
+													className="form-control"
+													id="email"
 													readOnly
 													value={user.email}
 												/>
@@ -138,16 +157,16 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 														updates.{' '}
 													</div> */}
 											</div>
-											<div className='mb-4'>
-												<label htmlFor='phone'>Số điện thoại *</label>
+											<div className="mb-4">
+												<label htmlFor="phone">Số điện thoại *</label>
 												<Field
-													name='deliveryPhoneNumber'
-													type='text'
-													className='form-control'
-													id='phone'
+													name="deliveryPhoneNumber"
+													type="text"
+													className="form-control"
+													id="phone"
 													component={TextInput}
-													variant='outlined'
-													size='small'
+													variant="outlined"
+													size="small"
 												/>
 												{/* <div className='invalid-feedback'>
 													{' '}
@@ -155,9 +174,9 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 													updates.{' '}
 												</div> */}
 											</div>
-											<div className='row'>
-												<div className='col-md-6 mb-3'>
-													<label htmlFor='country'>Tỉnh | Thành phố *</label>
+											<div className="row">
+												<div className="col-md-6 mb-3">
+													<label htmlFor="country">Tỉnh | Thành phố *</label>
 													{/* <select className='wide w-100' id='country'>
 														<option value='Choose...' data-display='Select'>
 															Choose...
@@ -178,8 +197,8 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 														))}
 													</Select>
 												</div>
-												<div className='col-md-6 mb-3'>
-													<label htmlFor='state'>Quận | Huyện *</label>
+												<div className="col-md-6 mb-3">
+													<label htmlFor="state">Quận | Huyện *</label>
 													{/* <select className='wide w-100' id='state'>
 														<option data-display='Select'>Choose...</option>
 														<option>California</option>
@@ -199,48 +218,48 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 													</Select>
 												</div>
 											</div>
-											<div className='mb-4'>
-												<label htmlFor='address'>Địa chỉ chi tiết *</label>
+											<div className="mb-4">
+												<label htmlFor="address">Địa chỉ chi tiết *</label>
 												<Field
-													name='deliveryAddress'
-													type='text'
-													className='form-control'
-													id='address'
+													name="deliveryAddress"
+													type="text"
+													className="form-control"
+													id="address"
 													component={TextInput}
-													variant='outlined'
-													size='small'
+													variant="outlined"
+													size="small"
 												/>
 												{/* <div className='invalid-feedback'>
 													{' '}
 													Please enter your shipping address.{' '}
 												</div> */}
 											</div>
-											<hr className='mb-4' />
-											<div className='custom-control custom-checkbox'>
+											<hr className="mb-4" />
+											<div className="custom-control custom-checkbox">
 												<input
-													type='checkbox'
-													className='custom-control-input'
-													id='save-info'
+													type="checkbox"
+													className="custom-control-input"
+													id="save-info"
 												/>
 												<label
-													className='custom-control-label'
-													htmlFor='save-info'
+													className="custom-control-label"
+													htmlFor="save-info"
 												>
 													Lưu thông tin địa chỉ cho lần sau
 												</label>
 											</div>
-											<hr className='mb-4' />
+											<hr className="mb-4" />
 											<Field
-												name='paymentMethod'
-												label='Phương thức thanh toán'
+												name="paymentMethod"
+												label="Phương thức thanh toán"
 												options={[
 													{
-														key: 'Thanh toán khi nhận hàng',
-														label: 'Thanh toán khi nhận hàng'
+														key: "Thanh toán khi nhận hàng",
+														label: "Thanh toán khi nhận hàng"
 													},
 													{
-														key: 'Paypal',
-														label: 'Paypal'
+														key: "Paypal",
+														label: "Paypal"
 													}
 												]}
 												component={RadioGroupInput}
@@ -285,171 +304,139 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 													</label>
 												</div>
 											</div> */}
-											<hr className='mb-1' /> {/* </form> */}
+											<hr className="mb-1" /> {/* </form> */}
 										</div>
 									</div>
-									<div className='col-sm-6 col-lg-6 mb-3'>
-										<div className='row'>
-											<div className='col-md-12 col-lg-12'>
-												<div className='shipping-method-box'>
-													<div className='title-left'>
+									<div className="col-sm-6 col-lg-6 mb-3">
+										<div className="row">
+											<div className="col-md-12 col-lg-12">
+												<div className="shipping-method-box">
+													<div className="title-left">
 														<h3>Phương thức vận chuyển</h3>
 													</div>
-													<div className='mb-4'>
-														<div className='custom-control custom-radio'>
+													<div className="mb-4">
+														<div className="custom-control custom-radio">
 															<input
-																id='shippingOption1'
-																name='shipping-option'
-																className='custom-control-input'
-																checked='checked'
-																type='radio'
+																id="shippingOption1"
+																name="shipping-option"
+																className="custom-control-input"
+																checked="checked"
+																type="radio"
 																onChange={() => {
 																	setTransId(1);
 																}}
 															/>
 															<label
-																className='custom-control-label'
-																htmlFor='shippingOption1'
+																className="custom-control-label"
+																htmlFor="shippingOption1"
 															>
 																{trans[0]?.name}
-															</label>{' '}
-															<span className='float-right font-weight-bold'>
+															</label>{" "}
+															<span className="float-right font-weight-bold">
 																${trans[0]?.cost}
-															</span>{' '}
+															</span>{" "}
 														</div>
-														<div className='ml-4 mb-2 small'>(3-7 ngày)</div>
-														<div className='custom-control custom-radio'>
+														<div className="ml-4 mb-2 small">(3-7 ngày)</div>
+														<div className="custom-control custom-radio">
 															<input
-																id='shippingOption2'
-																name='shipping-option'
-																className='custom-control-input'
-																type='radio'
+																id="shippingOption2"
+																name="shipping-option"
+																className="custom-control-input"
+																type="radio"
 																onChange={() => {
 																	setTransId(2);
 																}}
 															/>
 															<label
-																className='custom-control-label'
-																htmlFor='shippingOption2'
+																className="custom-control-label"
+																htmlFor="shippingOption2"
 															>
 																{trans[1]?.name}
-															</label>{' '}
-															<span className='float-right font-weight-bold'>
+															</label>{" "}
+															<span className="float-right font-weight-bold">
 																${trans[1]?.cost}
-															</span>{' '}
+															</span>{" "}
 														</div>
-														<div className='ml-4 mb-2 small'>(2-4 ngày)</div>
+														<div className="ml-4 mb-2 small">(2-4 ngày)</div>
 													</div>
 												</div>
 											</div>
-											<div className='col-md-12 col-lg-12'>
-												<div className='odr-box'>
-													<div className='title-left'>
+											<div className="col-md-12 col-lg-12">
+												<div className="odr-box">
+													<div className="title-left">
 														<h3>Giỏ hàng</h3>
 													</div>
-													<div className='rounded p-2 bg-light'>
+													<div className="rounded p-2 bg-light">
 														{cartDetails.map((cartDetail, index) => (
 															<div
-																className='media mb-2 border-bottom'
+																className="media mb-2 border-bottom"
 																key={index}
 															>
-																<div className='media-body'>
-																	{' '}
-																	<a href='detail.html'>
+																<div className="media-body">
+																	{" "}
+																	<a href="detail.html">
 																		{cartDetail.product.name}
 																	</a>
-																	<div className='small text-muted'>
-																		Giá: ${cartDetail.price}{' '}
-																		<span className='mx-2'>|</span> Số lượng:{' '}
-																		{cartDetail.quantity}{' '}
-																		<span className='mx-2'>|</span> Tổng: $
+																	<div className="small text-muted">
+																		Giá: ${cartDetail.price}{" "}
+																		<span className="mx-2">|</span> Số lượng:{" "}
+																		{cartDetail.quantity}{" "}
+																		<span className="mx-2">|</span> Tổng: $
 																		{cartDetail.price * cartDetail.quantity}
 																	</div>
 																</div>
 															</div>
 														))}
-
-														{/* <div className='media mb-2 border-bottom'>
-															<div className='media-body'>
-																{' '}
-																<a href='detail.html'>
-																	{' '}
-																	Lorem ipsum dolor sit amet
-																</a>
-																<div className='small text-muted'>
-																	Giá: $60.00 <span className='mx-2'>|</span> Số
-																	lượng: 1 <span className='mx-2'>|</span> Tổng:
-																	$60.00
-																</div>
-															</div>
-														</div> */}
-														{/* <div className='media mb-2'>
-															<div className='media-body'>
-																{' '}
-																<a href='detail.html'>
-																	{' '}
-																	Lorem ipsum dolor sit amet
-																</a>
-																<div className='small text-muted'>
-																	Giá: $40.00 <span className='mx-2'>|</span> Số
-																	lượng: 1 <span className='mx-2'>|</span> Tổng:
-																	$40.00
-																</div>
-															</div>
-														</div> */}
 													</div>
 												</div>
 											</div>
-											<div className='col-md-12 col-lg-12'>
-												<div className='order-box'>
-													<div className='title-left'>
+											<div className="col-md-12 col-lg-12">
+												<div className="order-box">
+													<div className="title-left">
 														<h3>Đơn hàng</h3>
 													</div>
-													<div className='d-flex'>
+													<div className="d-flex">
 														<h4>Tổng tiền hàng</h4>
-														<div className='ml-auto font-weight-bold'>
+														<div className="ml-auto font-weight-bold">
 															${calTotal(cartDetails)}
 														</div>
 													</div>
-													<div className='d-flex'>
+													<div className="d-flex">
 														<h4>Phí vận chuyển</h4>
-														<div className='ml-auto font-weight-bold'>
+														<div className="ml-auto font-weight-bold">
 															${trans[transId - 1]?.cost}
 														</div>
 													</div>
 													<hr />
-													<div className='d-flex gr-total'>
+													<div className="d-flex gr-total">
 														<h5>Tổng thanh toán</h5>
-														<div className='ml-auto h5'>
-															{' '}
+														<div className="ml-auto h5">
+															{" "}
 															$
 															{calTotal(cartDetails) +
-																trans[transId - 1]?.cost}{' '}
+																trans[transId - 1]?.cost}{" "}
 														</div>
 													</div>
-													<hr />{' '}
+													<hr />{" "}
 												</div>
 											</div>
-											<div className='col-12 d-flex shopping-box'>
-												{values.paymentMethod === 'Thanh toán khi nhận hàng' ? (
-													<button
-														className='ml-auto btn hvr-hover'
-														type='submit'
-													>
-														Đặt hàng
-													</button>
-												) : (
+											<div className="col-12 d-flex shopping-box">
+												{/* {values.paymentMethod === "Thanh toán khi nhận hàng" ? ( */}
+												<button className="ml-auto btn hvr-hover" type="submit">
+													Đặt hàng
+												</button>
+												{/* ) : (
 													<a
-														href='/paypal'
-														className='ml-auto btn hvr-hover'
+														href="/paypal"
+														className="ml-auto btn hvr-hover"
 														onClick={e => {
 															e.preventDefault();
-															history.push('/paypal');
+															history.push("/paypal");
 														}}
 													>
 														Thanh toán
 													</a>
-												)}
+												)} */}
 											</div>
 										</div>
 									</div>

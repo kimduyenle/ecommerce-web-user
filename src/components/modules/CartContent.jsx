@@ -1,8 +1,8 @@
-import TitleBox from 'components/titleBox';
-import Cart from 'components/cart';
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getByUser } from 'features/cartSlice';
+import TitleBox from "components/titleBox";
+import Cart from "components/cart";
+import React, { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getByUser, deleteCartDetail } from "features/cartSlice";
 
 const CartContent = () => {
 	const { cart } = useSelector(state => state.cart);
@@ -30,10 +30,18 @@ const CartContent = () => {
 		dispatch(getByUser());
 	}, [dispatch]);
 
+	const deleteCart = (productId, cartId) => {
+		dispatch(deleteCartDetail(productId, cartId));
+	};
+
 	return (
 		<div>
-			<TitleBox parent='Trang chủ' children='Giỏ hàng' path='/' />
-			<Cart cartDetails={cart.cartDetails} fetchCart={fetchCart} />
+			<TitleBox parent="Trang chủ" children="Giỏ hàng" path="/" />
+			<Cart
+				cartDetails={cart.cartDetails}
+				fetchCart={fetchCart}
+				deleteCartDetail={deleteCart}
+			/>
 		</div>
 	);
 };

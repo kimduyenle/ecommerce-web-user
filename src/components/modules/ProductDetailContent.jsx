@@ -1,26 +1,26 @@
-import TitleBox from 'components/titleBox';
-import ProductDetail from 'components/productDetail';
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import qs from 'qs';
-import productAPI from 'api/product';
-import reviewAPI from 'api/review';
-import { useDispatch, useSelector } from 'react-redux';
-import { getByUser } from 'features/cartSlice';
-import { localAuthenticate } from 'utils/localAuth';
+import TitleBox from "components/titleBox";
+import ProductDetail from "components/productDetail";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import qs from "qs";
+import productAPI from "api/product";
+import reviewAPI from "api/review";
+import { useDispatch, useSelector } from "react-redux";
+import { getByUser } from "features/cartSlice";
+import { localAuthenticate } from "utils/localAuth";
 
 const ProductDetailContent = () => {
 	const { search } = useLocation();
-	const { id } = qs.parse(search.replace(/^\?/, ''));
+	const { id } = qs.parse(search.replace(/^\?/, ""));
 	const [product, setProduct] = useState({
-		id: '',
-		name: '',
+		id: "",
+		name: "",
 		price: 0,
-		description: '',
+		description: "",
 		images: [],
 		user: {},
-		category: '',
-		quantity: 0,
+		category: "",
+		avaQuantity: 0,
 		sold: 0
 	});
 	const [reviews, setReviews] = useState([]);
@@ -45,11 +45,11 @@ const ProductDetailContent = () => {
 				images: fetchedProduct.images,
 				user: fetchedProduct.user,
 				category: fetchedProduct.category.name,
-				quantity: fetchedProduct.quantity,
+				avaQuantity: fetchedProduct.quantity,
 				sold: fetchedProduct.orderDetails.length
 			});
 		} catch (error) {
-			console.log('Failed to fetch product: ', error);
+			console.log("Failed to fetch product: ", error);
 		}
 	};
 	const fetchCart = () => {
@@ -83,7 +83,7 @@ const ProductDetailContent = () => {
 			const response = await reviewAPI.getByProduct(productId);
 			setReviews(response.data.reviews);
 		} catch (error) {
-			console.log('Failed to fetch reviews: ', error);
+			console.log("Failed to fetch reviews: ", error);
 		}
 	};
 
@@ -103,7 +103,7 @@ const ProductDetailContent = () => {
 
 	return (
 		<div>
-			<TitleBox parent='Trang chủ' children='Chi tiết sản phẩm' path='/' />
+			<TitleBox parent="Trang chủ" children="Chi tiết sản phẩm" path="/" />
 			<ProductDetail
 				{...product}
 				cartId={cart.id}

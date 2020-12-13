@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import Product from 'components/product';
-import productAPI from 'api/product';
-import { useDispatch, useSelector } from 'react-redux';
-import { getByUser } from 'features/cartSlice';
-import { localAuthenticate } from 'utils/localAuth';
-import useNotification from 'utils/hooks/notification';
-import CPagination from 'components/cPagination';
-import { useSearch } from 'app/context/SearchContext';
+import React, { useState, useEffect } from "react";
+import Product from "components/product";
+import productAPI from "api/product";
+import { useDispatch, useSelector } from "react-redux";
+import { getByUser } from "features/cartSlice";
+import { localAuthenticate } from "utils/localAuth";
+import useNotification from "utils/hooks/notification";
+import CPagination from "components/cPagination";
+import { useSearch } from "app/context/SearchContext";
 
 const ProductList = () => {
 	const { isAuthenticated } = localAuthenticate();
@@ -62,7 +62,7 @@ const ProductList = () => {
 				totalItemsCount: response.data.total
 			});
 		} catch (error) {
-			console.log('Failed to fetch products: ', error);
+			console.log("Failed to fetch products: ", error);
 		}
 	};
 
@@ -71,7 +71,7 @@ const ProductList = () => {
 			const response = await productAPI.getByType(2);
 			setLatestProducts(response.data.products);
 		} catch (error) {
-			console.log('Failed to fetch products: ', error);
+			console.log("Failed to fetch products: ", error);
 		}
 	};
 
@@ -80,7 +80,7 @@ const ProductList = () => {
 			const response = await productAPI.getByType(3);
 			setBestSellerProducts(response.data.products);
 		} catch (error) {
-			console.log('Failed to fetch products: ', error);
+			console.log("Failed to fetch products: ", error);
 		}
 	};
 
@@ -108,21 +108,21 @@ const ProductList = () => {
 	// }, [dispatch, isAuthenticated]);
 
 	return (
-		<div className='products-box'>
-			<div className='container'>
-				<div className='row'>
-					<div className='col-lg-12'>
-						<div className='title-all text-center'>
+		<div className="products-box">
+			<div className="container">
+				<div className="row">
+					<div className="col-lg-12">
+						<div className="title-all text-center">
 							<h1>SẢN PHẨM</h1>
 						</div>
 					</div>
 				</div>
-				<div className='row'>
-					<div className='col-lg-12'>
-						<div className='special-menu text-center'>
-							<div className='button-group filter-button-group'>
+				<div className="row">
+					<div className="col-lg-12">
+						<div className="special-menu text-center">
+							<div className="button-group filter-button-group">
 								<button
-									className='active'
+									className="active"
 									// data-filter='.all'
 									onClick={() => setTypeValue(1)}
 								>
@@ -144,9 +144,9 @@ const ProductList = () => {
 						</div>
 					</div>
 				</div>
-				<div className='row special-list'>
+				<div className="row special-list">
 					{products.map((product, index) => (
-						<div className='col-lg-3 col-md-6 special-grid all' key={index}>
+						<div className="col-lg-3 col-md-6 special-grid all" key={index}>
 							<Product
 								id={product.id}
 								name={product.name}
@@ -154,8 +154,9 @@ const ProductList = () => {
 								image={
 									product.images.length > 0
 										? product.images[0].path
-										: 'https://picsum.photos/400'
+										: "https://picsum.photos/400"
 								}
+								quantity={product.quantity}
 								cartId={cartId}
 								isAuthenticated={isAuthenticated}
 								fetchCart={fetchCart}
@@ -204,8 +205,8 @@ const ProductList = () => {
 					))} */}
 				</div>
 				{products.length > 0 && (
-					<div className='row'>
-						<div className='col-12'>
+					<div className="row">
+						<div className="col-12">
 							<CPagination
 								{...pagination}
 								handlePageChange={handlePageChange}

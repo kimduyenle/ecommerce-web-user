@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 // import { InputNumber } from 'antd';
 // import { get } from 'lodash';
 
@@ -12,7 +12,7 @@ const NumberInput = ({ field = {}, form = {}, ...props }) => {
 			// className='form-control'
 			// value='0'
 			// min='1'
-			type='number'
+			type="number"
 			{...field}
 			{...props}
 		/>

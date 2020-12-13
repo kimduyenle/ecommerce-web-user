@@ -1,8 +1,8 @@
-import apiClient from './apiClient';
+import apiClient from "./apiClient";
 
 const orderAPI = {
 	getAll: () => {
-		const url = '/orders';
+		const url = "/orders";
 		return apiClient.get(url);
 	},
 	get: id => {
@@ -18,6 +18,7 @@ const orderAPI = {
 		return apiClient.get(url, options);
 	},
 	add: ({
+		statusId,
 		paymentMethod,
 		deliveryPhoneNumber,
 		deliveryAddress,
@@ -27,6 +28,7 @@ const orderAPI = {
 	}) => {
 		const url = `/orders`;
 		return apiClient.post(url, {
+			statusId,
 			paymentMethod,
 			deliveryPhoneNumber,
 			deliveryAddress,

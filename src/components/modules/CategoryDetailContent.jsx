@@ -1,40 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import qs from 'qs';
-import TitleBox from 'components/titleBox';
-import Product from 'components/product';
-import productAPI from 'api/product';
-import categoryAPI from 'api/category';
-import { Slider, makeStyles } from '@material-ui/core';
-import { useDispatch, useSelector } from 'react-redux';
-import { getByUser } from 'features/cartSlice';
-import { localAuthenticate } from 'utils/localAuth';
-import CPagination from 'components/cPagination';
-import pro1 from 'assets/images/img-pro-01.jpg';
-import pro2 from 'assets/images/img-pro-02.jpg';
-import pro3 from 'assets/images/img-pro-03.jpg';
+import React, { useState, useEffect, useRef } from "react";
+import { useLocation, useHistory } from "react-router-dom";
+import qs from "qs";
+import TitleBox from "components/titleBox";
+import Product from "components/product";
+import productAPI from "api/product";
+import categoryAPI from "api/category";
+import { Slider, makeStyles } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
+import { getByUser } from "features/cartSlice";
+import { localAuthenticate } from "utils/localAuth";
+import CPagination from "components/cPagination";
+import pro1 from "assets/images/img-pro-01.jpg";
+import pro2 from "assets/images/img-pro-02.jpg";
+import pro3 from "assets/images/img-pro-03.jpg";
 
 const useStyles = makeStyles({
 	root: {
-		'& > span': {
-			color: '#d33b33',
+		"& > span": {
+			color: "#d33b33",
 			height: 10,
 			marginTop: -13,
-			'& span:nth-child(-n+2)': {
+			"& span:nth-child(-n+2)": {
 				height: 10
 			},
-			'& .MuiSlider-thumb': {
+			"& .MuiSlider-thumb": {
 				width: 21,
 				height: 21,
-				border: '2px solid #fff',
-				boxShadow: '0px 0px 6.65px 0.35px rgba(0,0,0,0.15)',
+				border: "2px solid #fff",
+				boxShadow: "0px 0px 6.65px 0.35px rgba(0,0,0,0.15)",
 				marginLeft: -10,
-				'& > span': {
-					display: 'none'
+				"& > span": {
+					display: "none"
 				}
 			},
-			'& .MuiSlider-rail': {
-				color: 'transparent'
+			"& .MuiSlider-rail": {
+				color: "transparent"
 			}
 		}
 	}
@@ -46,7 +46,7 @@ const CategoryDetailContent = () => {
 	const [categories, setCategories] = useState([]);
 	const { isAuthenticated } = localAuthenticate();
 	const { search } = useLocation();
-	const { id } = qs.parse(search.replace(/^\?/, ''));
+	const { id } = qs.parse(search.replace(/^\?/, ""));
 	const [products, setProducts] = useState([]);
 	const { cart } = useSelector(state => state.cart);
 	const cartId = cart.id;
@@ -54,7 +54,7 @@ const CategoryDetailContent = () => {
 	const dispatch = useDispatch();
 	const [sortValue, setSortValue] = useState(0);
 	const inputSearch = useRef(null);
-	const [searchStr, setSearchStr] = useState('');
+	const [searchStr, setSearchStr] = useState("");
 	const [pagination, setPagination] = useState({
 		activePage: 1,
 		itemsCountPerPage: 0,
@@ -96,7 +96,7 @@ const CategoryDetailContent = () => {
 				totalItemsCount: response.data.total
 			});
 		} catch (error) {
-			console.log('Failed to fetch product: ', error);
+			console.log("Failed to fetch product: ", error);
 		}
 	};
 
@@ -117,57 +117,57 @@ const CategoryDetailContent = () => {
 			const response = await categoryAPI.getAll();
 			setCategories(response.data.categories);
 		} catch (error) {
-			console.log('Failed to fetch categories: ', error);
+			console.log("Failed to fetch categories: ", error);
 		}
 	};
 	return (
 		<>
 			<TitleBox
-				parent='Trang chủ'
+				parent="Trang chủ"
 				children={`Danh mục ${categories[currentCategoryId - 1]?.name}`}
-				path='/'
+				path="/"
 			/>
-			<div className='shop-box-inner'>
-				<div className='container'>
-					<div className='row'>
-						<div className='col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left'>
-							<div className='product-categori'>
-								<div className='search-product'>
+			<div className="shop-box-inner">
+				<div className="container">
+					<div className="row">
+						<div className="col-xl-3 col-lg-3 col-sm-12 col-xs-12 sidebar-shop-left">
+							<div className="product-categori">
+								<div className="search-product">
 									<input
-										className='form-control'
-										placeholder='Tìm kiếm'
-										type='text'
+										className="form-control"
+										placeholder="Tìm kiếm"
+										type="text"
 										ref={inputSearch}
 									/>
 									<button
 										onClick={() => setSearchStr(inputSearch.current.value)}
 									>
-										<i className='fa fa-search'></i>
+										<i className="fa fa-search"></i>
 									</button>
 								</div>
-								<div className='filter-sidebar-left'>
-									<div className='title-left'>
+								<div className="filter-sidebar-left">
+									<div className="title-left">
 										<h3>Danh mục</h3>
 									</div>
 									<div
-										className='list-group list-group-collapse list-group-sm list-group-tree'
-										id='list-group-men'
-										data-children='.sub-men'
+										className="list-group list-group-collapse list-group-sm list-group-tree"
+										id="list-group-men"
+										data-children=".sub-men"
 									>
 										{categories.map((category, index) => (
-											<div className='list-group-collapse sub-men' key={index}>
+											<div className="list-group-collapse sub-men" key={index}>
 												<button
 													className={`list-group-item list-group-item-action ${
 														currentCategoryId === category.id ||
 														id === category.id
-															? 'active'
-															: ''
+															? "active"
+															: ""
 													}`}
 													// href='/category-detail'
 													onClick={() => setCurrentCategoryId(category.id)}
 												>
-													{category.name}{' '}
-													<small className='text-muted'>
+													{category.name}{" "}
+													<small className="text-muted">
 														({category.products.length})
 													</small>
 												</button>
@@ -175,31 +175,31 @@ const CategoryDetailContent = () => {
 										))}
 									</div>
 								</div>
-								<div className='filter-price-left'>
-									<div className='title-left'>
+								<div className="filter-price-left">
+									<div className="title-left">
 										<h3>Khoảng giá</h3>
 									</div>
-									<div className='price-box-slider'>
-										<div id='slider-range' className={classes.root}>
+									<div className="price-box-slider">
+										<div id="slider-range" className={classes.root}>
 											<Slider
 												value={value}
 												onChange={handleChange}
-												valueLabelDisplay='auto'
-												aria-labelledby='slider-range'
+												valueLabelDisplay="auto"
+												aria-labelledby="slider-range"
 												max={1000}
 												min={1}
 											/>
 										</div>
 										<p>
 											<input
-												type='text'
-												id='amount'
+												type="text"
+												id="amount"
 												readOnly
 												value={`$${value[0]} - $${value[1]}`}
 												style={{
 													border: 0,
-													color: '#fbb714',
-													fontWeight: 'bold'
+													color: "#fbb714",
+													fontWeight: "bold"
 												}}
 											/>
 										</p>
@@ -207,71 +207,71 @@ const CategoryDetailContent = () => {
 								</div>
 							</div>
 						</div>
-						<div className='col-xl-9 col-lg-9 col-sm-12 col-xs-12 shop-content-right'>
-							<div className='right-product-box'>
-								<div className='product-item-filter row'>
-									<div className='col-12 col-sm-8 text-center text-sm-left'>
-										<div className='toolbar-sorter-right d-flex'>
+						<div className="col-xl-9 col-lg-9 col-sm-12 col-xs-12 shop-content-right">
+							<div className="right-product-box">
+								<div className="product-item-filter row">
+									<div className="col-12 col-sm-8 text-center text-sm-left">
+										<div className="toolbar-sorter-right d-flex">
 											<span>Sắp xếp theo </span>
 											<select
-												id='basic'
-												className='selectpicker show-tick form-control'
-												data-placeholder='$ USD'
+												id="basic"
+												className="selectpicker show-tick form-control"
+												data-placeholder="$ USD"
 												value={sortValue}
 												onChange={e => {
 													setSortValue(e.target.value);
 													console.log(sortValue);
 												}}
 											>
-												<option data-display='Select' value='0'>
+												<option data-display="Select" value="0">
 													Nothing
 												</option>
-												<option value='1'>Mới nhất</option>
-												<option value='2'>Bán chạy</option>
-												<option value='3'>Giá cao → Giá thấp</option>
-												<option value='4'>Giá thấp → Giá cao</option>
+												<option value="1">Mới nhất</option>
+												<option value="2">Bán chạy</option>
+												<option value="3">Giá cao → Giá thấp</option>
+												<option value="4">Giá thấp → Giá cao</option>
 											</select>
 										</div>
 										{/* <p>Showing all 4 results</p> */}
 									</div>
-									<div className='col-12 col-sm-4 text-center text-sm-right'>
-										<ul className='nav nav-tabs ml-auto'>
+									<div className="col-12 col-sm-4 text-center text-sm-right">
+										<ul className="nav nav-tabs ml-auto">
 											<li>
 												<a
-													className='nav-link active'
-													href='#grid-view'
-													data-toggle='tab'
+													className="nav-link active"
+													href="#grid-view"
+													data-toggle="tab"
 												>
-													{' '}
-													<i className='fa fa-th'></i>{' '}
+													{" "}
+													<i className="fa fa-th"></i>{" "}
 												</a>
 											</li>
 											<li>
 												<a
-													className='nav-link'
-													href='#list-view'
-													data-toggle='tab'
+													className="nav-link"
+													href="#list-view"
+													data-toggle="tab"
 												>
-													{' '}
-													<i className='fa fa-list-ul'></i>{' '}
+													{" "}
+													<i className="fa fa-list-ul"></i>{" "}
 												</a>
 											</li>
 										</ul>
 									</div>
 								</div>
 
-								<div className='row product-categorie-box'>
-									<div className='tab-content'>
+								<div className="row product-categorie-box">
+									<div className="tab-content">
 										<div
-											role='tabpanel'
-											className='tab-pane fade show active'
-											id='grid-view'
+											role="tabpanel"
+											className="tab-pane fade show active"
+											id="grid-view"
 										>
-											<div className='row'>
+											<div className="row">
 												{products.length > 0 ? (
 													products.map((product, index) => (
 														<div
-															className='col-sm-6 col-md-6 col-lg-4 col-xl-4'
+															className="col-sm-6 col-md-6 col-lg-4 col-xl-4"
 															key={index}
 														>
 															<Product
@@ -281,8 +281,9 @@ const CategoryDetailContent = () => {
 																image={
 																	product.images.length > 0
 																		? product.images[0].path
-																		: 'https://picsum.photos/400'
+																		: "https://picsum.photos/400"
 																}
+																quantity={product.quantity}
 																cartId={cartId}
 																isAuthenticated={isAuthenticated}
 																fetchCart={fetchCart}
@@ -290,12 +291,12 @@ const CategoryDetailContent = () => {
 														</div>
 													))
 												) : (
-													<div className='col-sm-6 col-md-6 col-lg-4 col-xl-4'>
+													<div className="col-sm-6 col-md-6 col-lg-4 col-xl-4">
 														Chưa có sản phẩm nào
 													</div>
 												)}
 												{products.length > 0 && (
-													<div className='col-12'>
+													<div className="col-12">
 														<CPagination
 															{...pagination}
 															handlePageChange={handlePageChange}
@@ -305,49 +306,49 @@ const CategoryDetailContent = () => {
 											</div>
 										</div>
 										<div
-											role='tabpanel'
-											className='tab-pane fade'
-											id='list-view'
+											role="tabpanel"
+											className="tab-pane fade"
+											id="list-view"
 										>
-											<div className='list-view-box'>
-												<div className='row'>
-													<div className='col-sm-6 col-md-6 col-lg-4 col-xl-4'>
-														<div className='products-single fix'>
-															<div className='box-img-hover'>
-																<div className='type-lb'>
-																	<p className='new'>New</p>
+											<div className="list-view-box">
+												<div className="row">
+													<div className="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+														<div className="products-single fix">
+															<div className="box-img-hover">
+																<div className="type-lb">
+																	<p className="new">New</p>
 																</div>
-																<img src={pro1} className='img-fluid' alt='' />
-																<div className='mask-icon'>
+																<img src={pro1} className="img-fluid" alt="" />
+																<div className="mask-icon">
 																	<ul>
 																		<li>
 																			<a
-																				href='/'
-																				data-toggle='tooltip'
-																				data-placement='right'
-																				title='View'
+																				href="/"
+																				data-toggle="tooltip"
+																				data-placement="right"
+																				title="View"
 																			>
-																				<i className='fas fa-eye'></i>
+																				<i className="fas fa-eye"></i>
 																			</a>
 																		</li>
 																		<li>
 																			<a
-																				href='/'
-																				data-toggle='tooltip'
-																				data-placement='right'
-																				title='Compare'
+																				href="/"
+																				data-toggle="tooltip"
+																				data-placement="right"
+																				title="Compare"
 																			>
-																				<i className='fas fa-sync-alt'></i>
+																				<i className="fas fa-sync-alt"></i>
 																			</a>
 																		</li>
 																		<li>
 																			<a
-																				href='/'
-																				data-toggle='tooltip'
-																				data-placement='right'
-																				title='Add to Wishlist'
+																				href="/"
+																				data-toggle="tooltip"
+																				data-placement="right"
+																				title="Add to Wishlist"
 																			>
-																				<i className='far fa-heart'></i>
+																				<i className="far fa-heart"></i>
 																			</a>
 																		</li>
 																	</ul>
@@ -355,11 +356,11 @@ const CategoryDetailContent = () => {
 															</div>
 														</div>
 													</div>
-													<div className='col-sm-6 col-md-6 col-lg-8 col-xl-8'>
-														<div className='why-text full-width'>
+													<div className="col-sm-6 col-md-6 col-lg-8 col-xl-8">
+														<div className="why-text full-width">
 															<h4>Lorem ipsum dolor sit amet</h4>
 															<h5>
-																{' '}
+																{" "}
 																<del>$ 60.00</del> $40.79
 															</h5>
 															<p>
@@ -376,52 +377,52 @@ const CategoryDetailContent = () => {
 																Praesent vulputate semper libero pulvinar
 																consequat. Etiam ut placerat lectus.
 															</p>
-															<a className='btn hvr-hover' href='/'>
+															<a className="btn hvr-hover" href="/">
 																Add to Cart
 															</a>
 														</div>
 													</div>
 												</div>
 											</div>
-											<div className='list-view-box'>
-												<div className='row'>
-													<div className='col-sm-6 col-md-6 col-lg-4 col-xl-4'>
-														<div className='products-single fix'>
-															<div className='box-img-hover'>
-																<div className='type-lb'>
-																	<p className='sale'>Sale</p>
+											<div className="list-view-box">
+												<div className="row">
+													<div className="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+														<div className="products-single fix">
+															<div className="box-img-hover">
+																<div className="type-lb">
+																	<p className="sale">Sale</p>
 																</div>
-																<img src={pro2} className='img-fluid' alt='' />
-																<div className='mask-icon'>
+																<img src={pro2} className="img-fluid" alt="" />
+																<div className="mask-icon">
 																	<ul>
 																		<li>
 																			<a
-																				href='/'
-																				data-toggle='tooltip'
-																				data-placement='right'
-																				title='View'
+																				href="/"
+																				data-toggle="tooltip"
+																				data-placement="right"
+																				title="View"
 																			>
-																				<i className='fas fa-eye'></i>
+																				<i className="fas fa-eye"></i>
 																			</a>
 																		</li>
 																		<li>
 																			<a
-																				href='/'
-																				data-toggle='tooltip'
-																				data-placement='right'
-																				title='Compare'
+																				href="/"
+																				data-toggle="tooltip"
+																				data-placement="right"
+																				title="Compare"
 																			>
-																				<i className='fas fa-sync-alt'></i>
+																				<i className="fas fa-sync-alt"></i>
 																			</a>
 																		</li>
 																		<li>
 																			<a
-																				href='/'
-																				data-toggle='tooltip'
-																				data-placement='right'
-																				title='Add to Wishlist'
+																				href="/"
+																				data-toggle="tooltip"
+																				data-placement="right"
+																				title="Add to Wishlist"
 																			>
-																				<i className='far fa-heart'></i>
+																				<i className="far fa-heart"></i>
 																			</a>
 																		</li>
 																	</ul>
@@ -429,11 +430,11 @@ const CategoryDetailContent = () => {
 															</div>
 														</div>
 													</div>
-													<div className='col-sm-6 col-md-6 col-lg-8 col-xl-8'>
-														<div className='why-text full-width'>
+													<div className="col-sm-6 col-md-6 col-lg-8 col-xl-8">
+														<div className="why-text full-width">
 															<h4>Lorem ipsum dolor sit amet</h4>
 															<h5>
-																{' '}
+																{" "}
 																<del>$ 60.00</del> $40.79
 															</h5>
 															<p>
@@ -450,52 +451,52 @@ const CategoryDetailContent = () => {
 																Praesent vulputate semper libero pulvinar
 																consequat. Etiam ut placerat lectus.
 															</p>
-															<a className='btn hvr-hover' href='/'>
+															<a className="btn hvr-hover" href="/">
 																Add to Cart
 															</a>
 														</div>
 													</div>
 												</div>
 											</div>
-											<div className='list-view-box'>
-												<div className='row'>
-													<div className='col-sm-6 col-md-6 col-lg-4 col-xl-4'>
-														<div className='products-single fix'>
-															<div className='box-img-hover'>
-																<div className='type-lb'>
-																	<p className='sale'>Sale</p>
+											<div className="list-view-box">
+												<div className="row">
+													<div className="col-sm-6 col-md-6 col-lg-4 col-xl-4">
+														<div className="products-single fix">
+															<div className="box-img-hover">
+																<div className="type-lb">
+																	<p className="sale">Sale</p>
 																</div>
-																<img src={pro3} className='img-fluid' alt='' />
-																<div className='mask-icon'>
+																<img src={pro3} className="img-fluid" alt="" />
+																<div className="mask-icon">
 																	<ul>
 																		<li>
 																			<a
-																				href='/'
-																				data-toggle='tooltip'
-																				data-placement='right'
-																				title='View'
+																				href="/"
+																				data-toggle="tooltip"
+																				data-placement="right"
+																				title="View"
 																			>
-																				<i className='fas fa-eye'></i>
+																				<i className="fas fa-eye"></i>
 																			</a>
 																		</li>
 																		<li>
 																			<a
-																				href='/'
-																				data-toggle='tooltip'
-																				data-placement='right'
-																				title='Compare'
+																				href="/"
+																				data-toggle="tooltip"
+																				data-placement="right"
+																				title="Compare"
 																			>
-																				<i className='fas fa-sync-alt'></i>
+																				<i className="fas fa-sync-alt"></i>
 																			</a>
 																		</li>
 																		<li>
 																			<a
-																				href='/'
-																				data-toggle='tooltip'
-																				data-placement='right'
-																				title='Add to Wishlist'
+																				href="/"
+																				data-toggle="tooltip"
+																				data-placement="right"
+																				title="Add to Wishlist"
 																			>
-																				<i className='far fa-heart'></i>
+																				<i className="far fa-heart"></i>
 																			</a>
 																		</li>
 																	</ul>
@@ -503,11 +504,11 @@ const CategoryDetailContent = () => {
 															</div>
 														</div>
 													</div>
-													<div className='col-sm-6 col-md-6 col-lg-8 col-xl-8'>
-														<div className='why-text full-width'>
+													<div className="col-sm-6 col-md-6 col-lg-8 col-xl-8">
+														<div className="why-text full-width">
 															<h4>Lorem ipsum dolor sit amet</h4>
 															<h5>
-																{' '}
+																{" "}
 																<del>$ 60.00</del> $40.79
 															</h5>
 															<p>
@@ -524,7 +525,7 @@ const CategoryDetailContent = () => {
 																Praesent vulputate semper libero pulvinar
 																consequat. Etiam ut placerat lectus.
 															</p>
-															<a className='btn hvr-hover' href='/'>
+															<a className="btn hvr-hover" href="/">
 																Add to Cart
 															</a>
 														</div>
