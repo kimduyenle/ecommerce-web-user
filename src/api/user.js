@@ -1,12 +1,12 @@
-import apiClient from './apiClient';
+import apiClient from "./apiClient";
 
 const userAPI = {
 	getAll: () => {
-		const url = '/users';
+		const url = "/users";
 		return apiClient.get(url);
 	},
 	getProfile: () => {
-		const url = '/users/profile';
+		const url = "/users/profile";
 		return apiClient.get(url);
 	},
 	get: id => {
@@ -24,13 +24,15 @@ const userAPI = {
 			address
 		});
 	},
-	edit: ({ username, email, phoneNumber, address }, id) => {
+	edit: ({ username, email, phoneNumber, address, province, district }, id) => {
 		const url = `/users/${id}`;
 		return apiClient.put(url, {
 			username,
 			email,
 			phoneNumber,
-			address
+			address,
+			province,
+			district
 		});
 	},
 	uploadAvatar: (image, id) => {

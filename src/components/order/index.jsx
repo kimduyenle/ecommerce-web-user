@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
 	Avatar,
 	Accordion,
@@ -9,57 +9,59 @@ import {
 	CardContent,
 	Divider,
 	makeStyles
-} from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import OrderDetail from '../orderDetail';
-import calTotal from 'utils/calTotal';
-import formatDate from 'utils/formatDate';
-import orderAPI from 'api/order';
-import useNotification from 'utils/hooks/notification';
+} from "@material-ui/core";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import OrderDetail from "../orderDetail";
+import calTotal from "utils/calTotal";
+import formatDate from "utils/formatDate";
+import orderAPI from "api/order";
+import useNotification from "utils/hooks/notification";
 
 const useStyles = makeStyles(theme => ({
 	root: {
-		width: '100%'
+		width: "100%"
 	},
 	summary: {
-		display: 'flex',
-		alignItems: 'center'
+		display: "flex",
+		alignItems: "center"
 	},
 	avatar: {
 		marginRight: 20
 	},
 	username: {
-		fontFamily: 'Montserrat',
+		fontFamily: "Montserrat",
 		fontSize: theme.typography.pxToRem(15),
 		color: theme.palette.text.secondary,
 		marginRight: 40
 	},
 	quantity: {
-		fontFamily: 'Montserrat',
+		fontFamily: "Montserrat",
 		fontSize: theme.typography.pxToRem(15),
-		color: '#d33b33'
+		color: "#d33b33"
 	},
 	total: {
-		fontFamily: 'Montserrat',
-		lineHeight: 'normal',
+		fontFamily: "Montserrat",
+		lineHeight: "normal",
 		fontSize: 18,
-		color: '#d33b33'
+		color: "#d33b33",
+		display: "flex",
+		justifyContent: "space-between"
 	},
 	line: {
 		marginTop: 20,
 		marginBottom: 20
 	},
 	title: {
-		fontFamily: 'Montserrat',
+		fontFamily: "Montserrat",
 		fontSize: 18,
-		color: '#d33b33'
+		color: "#d33b33"
 	},
 	address: {
-		fontFamily: 'Montserrat',
-		fontSize: '#666666 !important'
+		fontFamily: "Montserrat",
+		fontSize: "#666666 !important"
 	},
 	date: {
-		fontFamily: 'Montserrat',
+		fontFamily: "Montserrat",
 		fontSize: theme.typography.pxToRem(15),
 		color: theme.palette.text.secondary,
 		marginLeft: 60
@@ -90,8 +92,11 @@ const Order = ({ orders, fetchOrder }) => {
 						c
 					>
 						<div className={classes.summary}>
+							<Typography className={classes.username}>
+								Đơn hàng {order.id}
+							</Typography>
 							<Avatar
-								alt=''
+								alt=""
 								className={classes.avatar}
 								src={order.orderDetails[0].product.user.avatar}
 							/>
@@ -107,16 +112,28 @@ const Order = ({ orders, fetchOrder }) => {
 						</div>
 					</AccordionSummary>
 					<AccordionDetails>
-						<div className='container'>
-							<div className='row'>
-								<div className='col-lg-6 col-md-12'>
+						<div className="container">
+							<div className="row">
+								<div className="col-lg-6 col-md-12">
 									{order.orderDetails.map((detail, index) => (
 										<OrderDetail key={index} orderDetail={detail} />
 									))}
 								</div>
-								<div className='col-lg-6 col-md-12 detail'>
+								<div className="col-lg-6 col-md-12 detail">
 									<Typography className={classes.total}>
-										Tổng tiền hàng: {calTotal(order.orderDetails)}
+										Tổng tiền hàng: <span>${calTotal(order.orderDetails)}</span>
+									</Typography>
+									<Divider className={classes.line} />
+									<Typography className={classes.total}>
+										Phí vận chuyển: <span>${order.transportation.cost}</span>
+									</Typography>
+									<Divider className={classes.line} />
+									<Typography className={classes.total}>
+										Tổng cộng:{" "}
+										<span>
+											$
+											{calTotal(order.orderDetails) + order.transportation.cost}
+										</span>
 									</Typography>
 									<Divider className={classes.line} />
 									<Typography className={classes.total}>
@@ -143,9 +160,9 @@ const Order = ({ orders, fetchOrder }) => {
 										<>
 											<Divider className={classes.line} />
 											<button
-												className='order-action'
+												className="order-action"
 												onClick={async () => {
-													console.log('statusId: ', order.statusId);
+													console.log("statusId: ", order.statusId);
 													try {
 														const statusId = 2;
 														const response = await orderAPI.editStatus(
@@ -155,18 +172,18 @@ const Order = ({ orders, fetchOrder }) => {
 															order.id
 														);
 														await fetchOrder();
-														showSuccess('Đã xác nhận đơn hàng');
+														showSuccess("Đã xác nhận đơn hàng");
 													} catch (error) {
-														showError('Không thành công');
+														showError("Không thành công");
 													}
 												}}
 											>
 												Xác nhận đơn hàng
 											</button>
 											<button
-												className='order-action reject'
+												className="order-action reject"
 												onClick={async () => {
-													console.log('statusId: ', order.statusId);
+													console.log("statusId: ", order.statusId);
 													try {
 														const statusId = 5;
 														const response = await orderAPI.editStatus(
@@ -176,9 +193,9 @@ const Order = ({ orders, fetchOrder }) => {
 															order.id
 														);
 														await fetchOrder();
-														showSuccess('Đã từ chối đơn hàng');
+														showSuccess("Đã từ chối đơn hàng");
 													} catch (error) {
-														showError('Không thành công');
+														showError("Không thành công");
 													}
 												}}
 											>

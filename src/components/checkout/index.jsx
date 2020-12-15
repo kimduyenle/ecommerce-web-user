@@ -11,14 +11,15 @@ import orderDetailAPI from "api/orderDetail";
 import useNotification from "utils/hooks/notification";
 import { provinceData, districtData } from "utils/province";
 import cartDetailAPI from "api/cartDetail";
+import { deleteCartDetail } from "features/cartSlice";
 
 import "antd/dist/antd.css";
 import { Select } from "antd";
 const { Option } = Select;
 
-const Checkout = ({ cartDetails = [], trans = [] }) => {
+const Checkout = ({ cartDetails = [], trans = [], productsByOwner }) => {
 	const { user } = useSelector(state => state.user);
-
+	const dispatch = useDispatch();
 	const history = useHistory();
 	const { showSuccess, showError } = useNotification();
 
@@ -38,6 +39,11 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 	const onSecondCityChange = value => {
 		setSecondCity(value);
 	};
+	function handleChange(value) {
+		console.log(`selected ${value}`);
+		setTransId(value);
+	}
+
 	return (
 		<div className="cart-box-main">
 			<div className="container">
@@ -77,34 +83,50 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 							} else {
 								statusId = 7;
 							}
-							const response = await orderAPI.add({
-								statusId: statusId,
-								paymentMethod,
-								deliveryPhoneNumber,
-								deliveryAddress,
-								province,
-								district,
-								transId
-							});
-							const orderId = await response.data.id;
-							for (const detail of cartDetails) {
-								const result = await orderDetailAPI.add({
-									productId: detail.productId,
-									orderId,
-									quantity: detail.quantity,
-									price: detail.price
+							const shipCost = trans[transId - 1].cost * productsByOwner.length;
+							const totalPrice = calTotal(cartDetails);
+							const total = shipCost + totalPrice;
+
+							const orderIds = [];
+							for (const detailObj of productsByOwner) {
+								const response = await orderAPI.add({
+									statusId: statusId,
+									paymentMethod,
+									deliveryPhoneNumber,
+									deliveryAddress,
+									province,
+									district,
+									transId
 								});
-								await cartDetailAPI.delete({
-									productId: detail.productId,
-									cartId: detail.cartId
-								});
+								const orderId = await response.data.id;
+								orderIds.push(orderId);
+								for (const detail of detailObj.data) {
+									const result = await orderDetailAPI.add({
+										productId: detail.productId,
+										orderId,
+										quantity: detail.quantity,
+										price: detail.price
+									});
+									// await cartDetailAPI.delete({
+									// 	productId: detail.productId,
+									// 	cartId: detail.cartId
+									// });
+									dispatch(
+										deleteCartDetail({
+											productId: detail.productId,
+											cartId: detail.cartId
+										})
+									);
+								}
 							}
+
 							if (paymentMethod === "Thanh toán khi nhận hàng") {
 								history.push("/cart");
 							} else {
 								history.push({
 									pathname: "/paypal",
-									search: `id=${orderId}&total=${calTotal(cartDetails)}`
+									// search: `id=${orderId}&total=${calTotal(cartDetails)}`,
+									state: { orderIds: orderIds, total: total }
 								});
 							}
 							showSuccess("Đặt hàng thành công");
@@ -133,13 +155,6 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 														readOnly
 														value={user.username}
 													/>
-													{/* <div
-															className='invalid-feedback'
-															style={{ width: '100%' }}
-														>
-															{' '}
-															Your username is required.{' '}
-														</div> */}
 												</div>
 											</div>
 											<div className="mb-3">
@@ -151,11 +166,6 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 													readOnly
 													value={user.email}
 												/>
-												{/* <div className='invalid-feedback'>
-														{' '}
-														Please enter a valid email address for shipping
-														updates.{' '}
-													</div> */}
 											</div>
 											<div className="mb-4">
 												<label htmlFor="phone">Số điện thoại *</label>
@@ -168,25 +178,11 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 													variant="outlined"
 													size="small"
 												/>
-												{/* <div className='invalid-feedback'>
-													{' '}
-													Please enter a valid email address for shipping
-													updates.{' '}
-												</div> */}
 											</div>
 											<div className="row">
 												<div className="col-md-6 mb-3">
 													<label htmlFor="country">Tỉnh | Thành phố *</label>
-													{/* <select className='wide w-100' id='country'>
-														<option value='Choose...' data-display='Select'>
-															Choose...
-														</option>
-														<option value='United States'>United States</option>
-													</select>
-													<div className='invalid-feedback'>
-														{' '}
-														Please select a valid country.{' '}
-													</div> */}
+
 													<Select
 														defaultValue={provinceData[0]}
 														style={{ width: 120 }}
@@ -199,14 +195,7 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 												</div>
 												<div className="col-md-6 mb-3">
 													<label htmlFor="state">Quận | Huyện *</label>
-													{/* <select className='wide w-100' id='state'>
-														<option data-display='Select'>Choose...</option>
-														<option>California</option>
-													</select>
-													<div className='invalid-feedback'>
-														{' '}
-														Please provide a valid state.{' '}
-													</div> */}
+
 													<Select
 														style={{ width: 120 }}
 														value={secondCity}
@@ -229,10 +218,6 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 													variant="outlined"
 													size="small"
 												/>
-												{/* <div className='invalid-feedback'>
-													{' '}
-													Please enter your shipping address.{' '}
-												</div> */}
 											</div>
 											<hr className="mb-4" />
 											<div className="custom-control custom-checkbox">
@@ -249,73 +234,12 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 												</label>
 											</div>
 											<hr className="mb-4" />
-											<Field
-												name="paymentMethod"
-												label="Phương thức thanh toán"
-												options={[
-													{
-														key: "Thanh toán khi nhận hàng",
-														label: "Thanh toán khi nhận hàng"
-													},
-													{
-														key: "Paypal",
-														label: "Paypal"
-													}
-												]}
-												component={RadioGroupInput}
-											/>
-											{/* <div className='title'>
-												{' '}
-												<span>Phương thức thanh toán</span>{' '}
-											</div>
-											<div className='d-block my-3'>
-												<div className='custom-control custom-radio'>
-													<input
-														id='on-delivery'
-														name='paymentMethod'
-														type='radio'
-														className='custom-control-input'
-														checked
-														onChange={e => {
-															console.log(e);
-														}}
-														required
-													/>
-													<label
-														className='custom-control-label'
-														htmlFor='on-delivery'
-													>
-														Thanh toán khi nhận hàng
-													</label>
+											<div className="shipping-method-box">
+												<div className="title-left">
+													<h3>Phương thức vận chuyển</h3>
 												</div>
-												<div className='custom-control custom-radio'>
-													<input
-														id='paypal'
-														name='paymentMethod'
-														type='radio'
-														className='custom-control-input'
-														required
-													/>
-													<label
-														className='custom-control-label'
-														htmlFor='paypal'
-													>
-														Paypal
-													</label>
-												</div>
-											</div> */}
-											<hr className="mb-1" /> {/* </form> */}
-										</div>
-									</div>
-									<div className="col-sm-6 col-lg-6 mb-3">
-										<div className="row">
-											<div className="col-md-12 col-lg-12">
-												<div className="shipping-method-box">
-													<div className="title-left">
-														<h3>Phương thức vận chuyển</h3>
-													</div>
-													<div className="mb-4">
-														<div className="custom-control custom-radio">
+												<div className="mb-4">
+													{/* <div className="custom-control custom-radio">
 															<input
 																id="shippingOption1"
 																name="shipping-option"
@@ -357,68 +281,115 @@ const Checkout = ({ cartDetails = [], trans = [] }) => {
 																${trans[1]?.cost}
 															</span>{" "}
 														</div>
-														<div className="ml-4 mb-2 small">(2-4 ngày)</div>
-													</div>
+														<div className="ml-4 mb-2 small">(2-4 ngày)</div> */}
+													<Select
+														defaultValue={trans[0]?.id}
+														style={{ width: "100%" }}
+														onChange={handleChange}
+													>
+														<Option value={trans[0]?.id}>
+															{trans[0]?.name}
+														</Option>
+														<Option value={trans[1]?.id}>
+															{trans[1]?.name}
+														</Option>
+													</Select>
 												</div>
 											</div>
-											<div className="col-md-12 col-lg-12">
-												<div className="odr-box">
-													<div className="title-left">
-														<h3>Giỏ hàng</h3>
-													</div>
-													<div className="rounded p-2 bg-light">
-														{cartDetails.map((cartDetail, index) => (
-															<div
-																className="media mb-2 border-bottom"
-																key={index}
-															>
-																<div className="media-body">
-																	{" "}
-																	<a href="detail.html">
-																		{cartDetail.product.name}
-																	</a>
-																	<div className="small text-muted">
-																		Giá: ${cartDetail.price}{" "}
-																		<span className="mx-2">|</span> Số lượng:{" "}
-																		{cartDetail.quantity}{" "}
-																		<span className="mx-2">|</span> Tổng: $
-																		{cartDetail.price * cartDetail.quantity}
+											<hr />
+											<Field
+												name="paymentMethod"
+												label="Phương thức thanh toán"
+												options={[
+													{
+														key: "Thanh toán khi nhận hàng",
+														label: "Thanh toán khi nhận hàng"
+													},
+													{
+														key: "Paypal",
+														label: "Paypal"
+													}
+												]}
+												component={RadioGroupInput}
+											/>
+											<hr className="mb-1" /> {/* </form> */}
+										</div>
+									</div>
+									<div className="col-sm-6 col-lg-6 mb-3">
+										{productsByOwner.map((detailObj, index) => (
+											<div className="row">
+												<div className="col-md-12 col-lg-12">
+													<div className="odr-box">
+														<div className="title-left">
+															<h3>{detailObj.user}</h3>
+														</div>
+														<div className="rounded p-2 bg-light">
+															{detailObj.data.map((cartDetail, index) => (
+																<div
+																	className="media mb-2 border-bottom"
+																	key={index}
+																>
+																	<div className="media-body">
+																		{" "}
+																		<a href="detail.html">
+																			{cartDetail.product.name}
+																		</a>
+																		<div className="small text-muted">
+																			Giá: ${cartDetail.price}{" "}
+																			<span className="mx-2">|</span> Số lượng:{" "}
+																			{cartDetail.quantity}{" "}
+																			<span className="mx-2">|</span> Tổng: $
+																			{cartDetail.price * cartDetail.quantity}
+																		</div>
 																	</div>
 																</div>
+															))}
+														</div>
+													</div>
+												</div>
+
+												<div className="col-md-12 col-lg-12">
+													<div className="order-box">
+														<div className="title-left">
+															<h3>Đơn hàng</h3>
+														</div>
+														<div className="d-flex">
+															<h4>Tổng tiền hàng</h4>
+															<div className="ml-auto font-weight-bold">
+																${calTotal(detailObj.data)}
 															</div>
-														))}
+														</div>
+														<div className="d-flex">
+															<h4>Phí vận chuyển</h4>
+															<div className="ml-auto font-weight-bold">
+																${trans[transId - 1]?.cost}
+															</div>
+														</div>
+														<hr />
+														<div className="d-flex">
+															<h4>Tổng cộng</h4>
+															<div className="ml-auto font-weight-bold">
+																$
+																{calTotal(detailObj.data) +
+																	trans[transId - 1]?.cost}
+															</div>
+														</div>
+														<hr />
 													</div>
 												</div>
 											</div>
-											<div className="col-md-12 col-lg-12">
-												<div className="order-box">
-													<div className="title-left">
-														<h3>Đơn hàng</h3>
+										))}
+										<div className="row">
+											<div className="col-12">
+												<div className="d-flex gr-total">
+													<h5>Tổng thanh toán</h5>
+													<div className="ml-auto h5">
+														$
+														{calTotal(cartDetails) +
+															trans[transId - 1]?.cost * productsByOwner.length}
 													</div>
-													<div className="d-flex">
-														<h4>Tổng tiền hàng</h4>
-														<div className="ml-auto font-weight-bold">
-															${calTotal(cartDetails)}
-														</div>
-													</div>
-													<div className="d-flex">
-														<h4>Phí vận chuyển</h4>
-														<div className="ml-auto font-weight-bold">
-															${trans[transId - 1]?.cost}
-														</div>
-													</div>
-													<hr />
-													<div className="d-flex gr-total">
-														<h5>Tổng thanh toán</h5>
-														<div className="ml-auto h5">
-															{" "}
-															$
-															{calTotal(cartDetails) +
-																trans[transId - 1]?.cost}{" "}
-														</div>
-													</div>
-													<hr />{" "}
 												</div>
+												<hr />{" "}
 											</div>
 											<div className="col-12 d-flex shopping-box">
 												{/* {values.paymentMethod === "Thanh toán khi nhận hàng" ? ( */}

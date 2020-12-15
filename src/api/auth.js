@@ -1,8 +1,8 @@
-import apiClient from './apiClient';
+import apiClient from "./apiClient";
 
 // const url = "/user_registration";
 
-const signup = ({ username, email, password }) => {
+const signup = ({ username, email, address, province, district, password }) => {
 	// const formData = new FormData();
 	// formData.append('username', username);
 	// formData.append('email', email);
@@ -12,7 +12,14 @@ const signup = ({ username, email, password }) => {
 	// 		'Content-Type': 'multipart/form-data'
 	// 	}
 	// });
-	return apiClient.post(`/users`, { username, email, password });
+	return apiClient.post(`/users`, {
+		username,
+		email,
+		address,
+		province,
+		district,
+		password
+	});
 };
 
 const signin = ({ username, password }) => {

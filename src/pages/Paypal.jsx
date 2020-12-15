@@ -8,14 +8,18 @@ import useNotification from "utils/hooks/notification";
 
 const Paypal = () => {
 	const history = useHistory();
-	const { search } = useLocation();
 
-	const { id, total } = qs.parse(search.replace(/^\?/, ""));
+	const location = useLocation();
+	const { orderIds, total } = location.state;
+	// const { search } = useLocation();
+	// const { id, total } = qs.parse(search.replace(/^\?/, ""));
 	const { showSuccess } = useNotification();
-	console.log(id, total);
+	console.log(orderIds, total);
 	const updateOrderStatus = async () => {
 		try {
-			await orderAPI.editStatus({ statusId: 1 }, id);
+			for (const orderId of orderIds) {
+				await orderAPI.editStatus({ statusId: 1 }, orderId);
+			}
 			history.push("/cart");
 			showSuccess("Thanh toán thành công");
 		} catch (error) {

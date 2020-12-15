@@ -1,16 +1,16 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import API from 'api';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import API from "api";
 import {
 	localAuthenticate,
 	removeAccessToken,
 	setAccessToken
-} from 'utils/localAuth';
+} from "utils/localAuth";
 
 export const signup = createAsyncThunk(
-	'auth/signup',
-	({ username, email, password, onComplete }) => {
+	"auth/signup",
+	({ username, email, address, province, district, password, onComplete }) => {
 		return API.auth
-			.signup({ username, email, password })
+			.signup({ username, email, address, province, district, password })
 			.then(({ data }) => {
 				onComplete(null, data);
 				return data;
@@ -23,7 +23,7 @@ export const signup = createAsyncThunk(
 );
 
 export const activate = createAsyncThunk(
-	'auth/activate',
+	"auth/activate",
 	({ key, onComplete }) => {
 		return API.auth
 			.activate(key)
@@ -39,7 +39,7 @@ export const activate = createAsyncThunk(
 );
 
 export const signin = createAsyncThunk(
-	'auth/signin',
+	"auth/signin",
 	({ username, password, onComplete }, { dispatch }) => {
 		return API.auth
 			.signin({ username, password })
@@ -63,7 +63,7 @@ export const signin = createAsyncThunk(
 // )
 
 export const changePassword = createAsyncThunk(
-	'auth/password-change',
+	"auth/password-change",
 	({ oldPassword, newPassword, confirmPassword, id, onComplete }) => {
 		return API.auth
 			.changePassword({
@@ -84,7 +84,7 @@ export const changePassword = createAsyncThunk(
 );
 
 export const resetPassword = createAsyncThunk(
-	'auth/resetPassword',
+	"auth/resetPassword",
 	({ email, onComplete }) => {
 		return API.auth
 			.resetPassword({ email })
@@ -100,7 +100,7 @@ export const resetPassword = createAsyncThunk(
 );
 
 export const confirmResetPassword = createAsyncThunk(
-	'auth/confirmResetPassword',
+	"auth/confirmResetPassword",
 	({ activation_key, password1, password2, onComplete }) => {
 		return API.auth
 			.confirmResetPassword({ activation_key, password1, password2 })
@@ -115,7 +115,7 @@ export const confirmResetPassword = createAsyncThunk(
 	}
 );
 
-export const getAllUsers = createAsyncThunk('user/getAll', ({ onComplete }) => {
+export const getAllUsers = createAsyncThunk("user/getAll", ({ onComplete }) => {
 	return API.auth
 		.getAllUsers()
 		.then(({ data }) => {
@@ -129,7 +129,7 @@ export const getAllUsers = createAsyncThunk('user/getAll', ({ onComplete }) => {
 });
 
 export const authSlice = createSlice({
-	name: 'auth',
+	name: "auth",
 	initialState: {
 		authState: {
 			...localAuthenticate()
@@ -160,7 +160,7 @@ export const authSlice = createSlice({
 		getAllUsers: {
 			users: [],
 			loading: false,
-			error: ''
+			error: ""
 		}
 	},
 	reducers: {

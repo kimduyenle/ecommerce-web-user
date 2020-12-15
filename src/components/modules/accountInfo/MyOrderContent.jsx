@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
 	makeStyles,
 	AppBar,
@@ -7,22 +7,22 @@ import {
 	Tab,
 	Typography,
 	Box
-} from '@material-ui/core';
-import TitleBox from 'components/titleBox';
-import MyOrder from 'components/myOrder';
-import AddProduct from 'components/myProduct/addProduct';
-import { localAuthenticate } from 'utils/localAuth';
-import useNotification from 'utils/hooks/notification';
-import clsx from 'clsx';
-import productAPI from 'api/product';
-import statusAPI from 'api/status';
-import orderAPI from 'api/order';
-import CPagination from 'components/cPagination';
+} from "@material-ui/core";
+import TitleBox from "components/titleBox";
+import MyOrder from "components/myOrder";
+import AddProduct from "components/myProduct/addProduct";
+import { localAuthenticate } from "utils/localAuth";
+import useNotification from "utils/hooks/notification";
+import clsx from "clsx";
+import productAPI from "api/product";
+import statusAPI from "api/status";
+import orderAPI from "api/order";
+import CPagination from "components/cPagination";
 
 const TabPanel = ({ children, value, index, ...other }) => {
 	return (
 		<div
-			role='tabpanel'
+			role="tabpanel"
 			hidden={value !== index}
 			id={`simple-tabpanel-${index}`}
 			aria-labelledby={`simple-tab-${index}`}
@@ -42,24 +42,24 @@ TabPanel.propTypes = {
 const a11yProps = index => {
 	return {
 		id: `simple-tab-${index}`,
-		'aria-controls': `simple-tabpanel-${index}`
+		"aria-controls": `simple-tabpanel-${index}`
 	};
 };
 
 const useStyles = makeStyles(theme => ({
 	root: {
-		backgroundColor: '#fff',
-		minHeight: '100%',
+		backgroundColor: "#fff",
+		minHeight: "100%",
 		paddingBottom: theme.spacing(9),
 		paddingTop: theme.spacing(9),
-		'& .MuiBox-root': {
+		"& .MuiBox-root": {
 			padding: 0
 		}
 	},
 	header: {
-		backgroundColor: '#d33b33',
-		'& span': {
-			textTransform: 'none'
+		backgroundColor: "#d33b33",
+		"& span": {
+			textTransform: "none"
 		}
 	}
 }));
@@ -89,7 +89,7 @@ const MyOrderContent = () => {
 			const response = await statusAPI.getAll();
 			setStatuses(response.data.statuses);
 		} catch (error) {
-			console.log('Failed to fetch statuses: ', error);
+			console.log("Failed to fetch statuses: ", error);
 		}
 	};
 
@@ -114,22 +114,22 @@ const MyOrderContent = () => {
 				itemsCountPerPage: response.data.totalPage,
 				totalItemsCount: response.data.total
 			});
-			console.log('product', products);
+			console.log("product", products);
 		} catch (error) {
-			console.log('Failed to fetch products: ', error);
+			console.log("Failed to fetch products: ", error);
 		}
 	};
 
 	const fetchOrder = async () => {
 		try {
 			const params = {
-				statusId: value + 1,
-				page: pagination.activePage,
-				limit: 3
+				statusId: value + 1
+				// page: pagination.activePage,
+				// limit: 3
 			};
 			const response = await orderAPI.getByUser({ params: params });
-			console.log('params', params);
-			console.log('response', response);
+			console.log("params", params);
+			console.log("response", response);
 			setOrders(response.data.dataInPage);
 			// setPagination({
 			// 	...pagination,
@@ -137,7 +137,7 @@ const MyOrderContent = () => {
 			// 	totalItemsCount: response.data.total
 			// });
 		} catch (error) {
-			console.log('Failed to fetch orders: ', error);
+			console.log("Failed to fetch orders: ", error);
 		}
 	};
 
@@ -160,21 +160,21 @@ const MyOrderContent = () => {
 				product => product.id !== response.data.id
 			);
 			setProducts(newProducts);
-			showSuccess('Deleted successfully.');
+			showSuccess("Deleted successfully.");
 		} catch (error) {
-			showError('Failed to delete');
+			showError("Failed to delete");
 		}
 	};
 
 	return (
 		<>
-			<TitleBox parent='Trang chủ' children='Đơn mua' path='/' />
-			<div className={clsx(classes.root, 'container')}>
-				<AppBar position='static' className={classes.header}>
+			<TitleBox parent="Trang chủ" children="Đơn mua" path="/" />
+			<div className={clsx(classes.root, "container")}>
+				<AppBar position="static" className={classes.header}>
 					<Tabs
 						value={value}
 						onChange={handleChange}
-						aria-label='simple tabs example'
+						aria-label="simple tabs example"
 					>
 						{statuses.map((status, index) => (
 							<Tab key={index} label={status.name} {...a11yProps(index)} />
@@ -185,7 +185,7 @@ const MyOrderContent = () => {
 					{orders.length > 0 ? (
 						<MyOrder orders={orders} fetchOrder={fetchOrder} />
 					) : (
-						'Chưa có đơn hàng'
+						"Chưa có đơn hàng"
 					)}
 
 					{/* <CPagination {...pagination} handlePageChange={handlePageChange} /> */}

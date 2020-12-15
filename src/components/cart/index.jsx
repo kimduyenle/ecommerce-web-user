@@ -17,31 +17,10 @@ const error = (title, content, ok, onOk) => {
 	});
 };
 
-const CheckboxGroup = Checkbox.Group;
-
-const plainOptions = ["Apple", "Pear", "Orange"];
-
 const Cart = ({ cartDetails = [], fetchCart }) => {
 	const history = useHistory();
 	const { showError, showSuccess } = useNotification();
 	const dispatch = useDispatch();
-	const [updatedQuantity, setUpdatedQuantity] = useState(0);
-	const [check, setCheck] = useState([]);
-
-	const [checkedList, setCheckedList] = React.useState([]);
-	const [checkedAll, setCheckedAll] = React.useState(false);
-
-	// const onChange = list => {
-	// 	setCheckedList(list);
-	// 	// setIndeterminate(!!list.length && list.length < plainOptions.length);
-	// 	setCheckAll(list.length === plainOptions.length);
-	// };
-
-	// const onCheckAllChange = e => {
-	// 	setCheckedList(e.target.checked ? plainOptions : []);
-	// 	// setIndeterminate(false);
-	// 	setCheckAll(e.target.checked);
-	// };
 
 	const users = [];
 	for (let detail of cartDetails) {
@@ -64,9 +43,55 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 		};
 	});
 
-	console.log("users", cartDetails);
-	console.log("cartDetailsByOwner: ", cartDetailsByOwner);
+	// new
+	const [options, setOptions] = useState({
+		checked: {},
+		checkAll: false
+	});
+	const onCheckAllChange = (e, groupKey) => {
+		if (e.target.checked) {
+			const checked = groupKey.reduce((prev, curr) => {
+				return { ...prev, [curr.productId]: true };
+			}, {});
+			setOptions({ checked, checkAll: true });
+		}
+	};
+	const onChange = (e, value, groupKey) => {
+		setOptions(state => ({
+			checked: { ...state.checked, [value]: e.target.checked }
+		}));
 
+		const { checked } = options;
+		checked[value] = e.target.checked;
+		const values = Object.values(checked);
+		if (values.length === groupKey.length && values.every(v => v)) {
+			setOptions({ ...options, checkAll: true });
+		} else {
+			setOptions({ ...options, checkAll: false });
+		}
+	};
+
+	console.log("cartDetails", cartDetails);
+	console.log("options", options);
+
+	const selectedIndexProducts = [];
+	for (let key in options.checked) {
+		if (options.checked[key] === true) {
+			selectedIndexProducts.push(parseInt(key));
+		}
+	}
+
+	const selectedProducts = selectedIndexProducts.map(item => {
+		for (let detail of cartDetails) {
+			if (item === detail.productId) {
+				return { ...detail };
+			}
+		}
+	});
+
+	console.log("cartDetailsByOwner", cartDetailsByOwner);
+	console.log("selectedIndexProducts", selectedIndexProducts);
+	console.log("selectedProducts", selectedProducts);
 	return (
 		<div className="cart-box-main">
 			<div className="container">
@@ -86,37 +111,28 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 									</tr>
 								</thead>
 								<tbody>
+									<tr>
+										<td>
+											<Checkbox
+												onChange={e => onCheckAllChange(e, cartDetails)}
+												checked={options.checkAll}
+											>
+												Tất cả
+											</Checkbox>
+										</td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+									</tr>
 									{cartDetailsByOwner.length > 0 &&
 										cartDetailsByOwner.map((detailObj, index) => {
-											const checkAll = [];
-											for (let data of detailObj.data) {
-												checkAll.push(data.productId);
-											}
 											return (
 												<>
-													<tr>
-														<td>
-															<Checkbox
-																onChange={e => {
-																	const checked = [];
-																	if (e.target.checked) {
-																		for (let data of detailObj.data) {
-																			checked.push(data.productId);
-																		}
-																		setCheckedAll(true);
-																	} else {
-																		setCheckedAll(false);
-																	}
-																	setCheck(checked);
-																}}
-																checked={
-																	JSON.stringify(check) ==
-																	JSON.stringify(checkAll)
-																}
-															>
-																{detailObj.user}
-															</Checkbox>
-														</td>
+													<tr key={index}>
+														<td>{detailObj.user}</td>
 														<td></td>
 														<td></td>
 														<td></td>
@@ -124,37 +140,15 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 														<td></td>
 														<td></td>
 													</tr>
-													{detailObj.data.map((detail, index) => (
-														<tr key={index}>
+													{detailObj.data.map((detail, i) => (
+														<tr key={i}>
 															<td>
 																<Checkbox
-																	checked={
-																		_.indexOf(check, detail.productId) !== -1
-																			? true
-																			: false
+																	onChange={e =>
+																		onChange(e, detail.productId, cartDetails)
 																	}
-																	onChange={e => {
-																		console.log("check: ", check);
-																		const currentCheck = check.filter(
-																			x => true
-																		);
-																		if (e.target.checked) {
-																			currentCheck.push(detail.productId);
-																			setCheck(currentCheck);
-																		} else {
-																			const i = _.indexOf(
-																				check,
-																				detail.productId
-																			);
-																			currentCheck.splice(i, 1);
-																			setCheck(currentCheck);
-																		}
-																	}}
-																	disabled={
-																		checkedAll &&
-																		check.length > 0 &&
-																		_.indexOf(check, detail.productId)
-																	}
+																	value={detail.productId}
+																	checked={options.checked[detail.productId]}
 																></Checkbox>
 															</td>
 															<td className="thumbnail-img">
@@ -325,7 +319,7 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 							<hr />
 							<div className="d-flex gr-total">
 								<h5>Tổng tiền</h5>
-								<div className="ml-auto h5">${calTotal(cartDetails)}</div>
+								<div className="ml-auto h5">${calTotal(selectedProducts)}</div>
 							</div>
 							<hr />{" "}
 						</div>
@@ -334,7 +328,10 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 						<a
 							onClick={e => {
 								e.preventDefault();
-								history.push("/checkout");
+								history.push({
+									pathname: "/checkout",
+									state: { data: selectedProducts }
+								});
 							}}
 							href="/checkout"
 							className="ml-auto btn hvr-hover"
