@@ -328,13 +328,36 @@ const Cart = ({ cartDetails = [], fetchCart }) => {
 						<a
 							onClick={e => {
 								e.preventDefault();
+
+								// for (let i of selectedProducts) {
+								// 	if (i.quantity > i.product.quantity) {
+								// 		error(
+								// 			"Lỗi",
+								// 			`Bạn chỉ có thể mua tối đa ${i.product.quantity} sản phẩm`,
+								// 			"Đồng ý",
+								// 			() => {
+								// 				dispatch(
+								// 					editCartDetail({
+								// 						productId: i.productId,
+								// 						cartId: i.cartId,
+								// 						quantity: i.product.quantity
+								// 					})
+								// 				);
+								// 			}
+								// 		);
+								// 		return;
+								// 	}
+								// }
 								history.push({
 									pathname: "/checkout",
 									state: { data: selectedProducts }
 								});
 							}}
 							href="/checkout"
-							className="ml-auto btn hvr-hover"
+							className={`ml-auto btn hvr-hover ${
+								selectedIndexProducts.length === 0 && "disabled"
+							}`}
+							// disabled
 						>
 							Mua hàng
 						</a>{" "}

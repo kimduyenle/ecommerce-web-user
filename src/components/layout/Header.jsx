@@ -184,6 +184,11 @@ const Header = () => {
 										className="form-control"
 										placeholder="Tìm kiếm"
 										ref={inputSearch}
+										onKeyPress={e => {
+											if (e.key === "Enter") {
+												searchChange(inputSearch.current.value);
+											}
+										}}
 									/>
 									<button
 										onClick={() => searchChange(inputSearch.current.value)}

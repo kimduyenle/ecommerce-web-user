@@ -151,11 +151,7 @@ const ProductList = () => {
 								id={product.id}
 								name={product.name}
 								price={product.price}
-								image={
-									product.images.length > 0
-										? product.images[0].path
-										: "https://picsum.photos/400"
-								}
+								image={product.images.filter(i => !i.isDeleted)[0].path}
 								quantity={product.quantity}
 								cartId={cartId}
 								isAuthenticated={isAuthenticated}

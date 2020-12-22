@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import * as Yup from 'yup';
-import { Formik, Form, Field } from 'formik';
+import React, { useEffect, useState } from "react";
+import { Link as RouterLink, useHistory } from "react-router-dom";
+import * as Yup from "yup";
+import { Formik, Form, Field } from "formik";
 import {
 	Box,
 	Button,
@@ -9,21 +9,21 @@ import {
 	Link,
 	Typography,
 	makeStyles
-} from '@material-ui/core';
-import Page from 'components/Page';
-import TextInput from 'components/inputs/TextInput';
-import SelectInput from 'components/inputs/SelectInput';
-import { useDispatch } from 'react-redux';
-import useNotification from 'utils/hooks/notification';
-import UploadProduct from 'components/uploadProduct';
-import productAPI from 'api/product';
-import categoryAPI from 'api/category';
-import imageAPI from 'api/image';
+} from "@material-ui/core";
+import Page from "components/Page";
+import TextInput from "components/inputs/TextInput";
+import SelectInput from "components/inputs/SelectInput";
+import { useDispatch } from "react-redux";
+import useNotification from "utils/hooks/notification";
+import UploadProduct from "components/uploadProduct";
+import productAPI from "api/product";
+import categoryAPI from "api/category";
+import imageAPI from "api/image";
 
 const useStyles = makeStyles(theme => ({
 	root: {
-		backgroundColor: '#fff',
-		height: '100%'
+		backgroundColor: "#fff",
+		height: "100%"
 		// paddingBottom: theme.spacing(3),
 		// paddingTop: theme.spacing(3)
 	},
@@ -32,22 +32,22 @@ const useStyles = makeStyles(theme => ({
 		paddingRight: 0
 	},
 	title: {
-		fontFamily: 'Montserrat',
+		fontFamily: "Montserrat",
 		fontSize: 15,
 		fontWeight: 400,
-		color: '#666666',
+		color: "#666666",
 		padding: 0
 	},
 	field: {
-		'& label, & input, & textarea, & > div': {
+		"& label, & input, & textarea, & > div": {
 			fontSize: 15,
-			fontFamily: 'Montserrat'
+			fontFamily: "Montserrat"
 		}
 	},
 	button: {
-		backgroundColor: '#122230',
-		'&:hover': {
-			backgroundColor: '#122230ed'
+		backgroundColor: "#122230",
+		"&:hover": {
+			backgroundColor: "#122230ed"
 		}
 	}
 }));
@@ -72,12 +72,18 @@ const EditProduct = ({ fetchProduct, product }) => {
 	// upload
 	const [uploadData, setData] = useState({
 		previewVisible: false,
-		previewImage: '',
-		previewTitle: '',
+		previewImage: "",
+		previewTitle: "",
 		fileList: []
 	});
 
 	const handleCancel = () => setData({ ...uploadData, previewVisible: false });
+
+	const handleRemove = e => {
+		console.log("remove", e);
+		// const currentImages = images;
+		// setImages(currentImages.filter(i => i.uid !== e.uid));
+	};
 
 	const handlePreview = async file => {
 		if (!file.url && !file.preview) {
@@ -89,13 +95,14 @@ const EditProduct = ({ fetchProduct, product }) => {
 			previewImage: file.url || file.preview,
 			previewVisible: true,
 			previewTitle:
-				file.name || file.url.substring(file.url.lastIndexOf('/') + 1)
+				file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
 		});
 	};
 
 	const handleChange = ({ fileList }) => {
-		console.log('list: ', fileList);
+		console.log("list: ", fileList);
 		setData({ ...uploadData, fileList });
+		// setImages(fileList);
 	};
 
 	const beforeUpload = (file, fileList) => {
@@ -105,35 +112,43 @@ const EditProduct = ({ fetchProduct, product }) => {
 	};
 
 	useEffect(() => {
-		const fileList = product.images.map(image => {
-			return {
-				uid: image.id,
-				url: image.path
-			};
-		});
+		const fileList = product.images
+			.filter(i => !i.isDeleted)
+			.map(image => {
+				return {
+					uid: image.id,
+					url: image.path
+				};
+			});
 		setData({
 			...uploadData,
 			fileList
 		});
+		setImages(fileList);
 	}, [product]);
 
 	// end upload
+	console.log({ images });
 
 	const onFileUpload = async id => {
 		try {
-			for (let i = 0; i < images.length; i++) {
-				if (images[i] !== '') {
-					let fileData = new FormData();
-					fileData.set(
-						'image',
-						images[i],
-						`${images[i].lastModified}-${images[i].name}`
-					);
-					await imageAPI.uploadProductImage(fileData, id);
+			if (images) {
+				for (let i = 0; i < images.length; i++) {
+					if (images[i] !== "") {
+						let fileData = new FormData();
+						fileData.set(
+							"image",
+							images[i],
+							`${images[i].lastModified}-${images[i].name}`
+						);
+						await imageAPI.uploadProductImage(fileData, id);
+					}
 				}
+			} else {
+				await imageAPI.setDefaultImage(id);
 			}
 		} catch (error) {
-			console.log('Failed to edit user: ', error);
+			console.log("Failed to edit user: ", error);
 		}
 	};
 
@@ -143,38 +158,38 @@ const EditProduct = ({ fetchProduct, product }) => {
 				const response = await categoryAPI.getAll();
 				setCategories(response.data.categories);
 			} catch (error) {
-				console.log('Failed to fetch category: ', error);
+				console.log("Failed to fetch category: ", error);
 			}
 		};
 		fetchCategories();
 	}, []);
 
-	console.log('filelist: ', uploadData.fileList);
-	console.log('images', images);
+	console.log("filelist: ", uploadData.fileList);
+	console.log("images", images);
 
 	return (
-		<Page className={classes.root} title='Add product'>
+		<Page className={classes.root} title="Add product">
 			<Box
-				display='flex'
-				flexDirection='column'
+				display="flex"
+				flexDirection="column"
 				// height="100%"
-				justifyContent='center'
+				justifyContent="center"
 			>
-				<Container maxWidth='sm' className={classes.container}>
+				<Container maxWidth="sm" className={classes.container}>
 					<Formik
 						enableReinitialize={true}
 						initialValues={{
-							categoryId: product.categoryId || '',
-							name: product.name || '',
-							description: product.description || '',
-							quantity: product.quantity || '',
-							price: product.price || ''
+							categoryId: product.categoryId || "",
+							name: product.name || "",
+							description: product.description || "",
+							quantity: product.quantity || "",
+							price: product.price || ""
 						}}
 						validationSchema={Yup.object().shape({
-							categoryId: Yup.number().required('Category is required'),
-							name: Yup.string().required('Name is required'),
-							quantity: Yup.number().required('Quantity is required'),
-							price: Yup.number().required('Price is required')
+							categoryId: Yup.number().required("Category is required"),
+							name: Yup.string().required("Name is required"),
+							quantity: Yup.number().required("Quantity is required"),
+							price: Yup.number().required("Price is required")
 						})}
 						onSubmit={async (
 							{ categoryId, name, description, quantity, price },
@@ -191,12 +206,16 @@ const EditProduct = ({ fetchProduct, product }) => {
 									},
 									product.id
 								);
+								// const arrImages = product.images.filter(i => !i.isDeleted);
+								// for (let image of arrImages) {
+								// 	await imageAPI.delete(image.id);
+								// }
 								await onFileUpload(product.id);
 								await fetchProduct();
-								showSuccess('Chỉnh sửa sản phẩm thành công');
+								showSuccess("Chỉnh sửa sản phẩm thành công");
 								// history.push(routes.products.path);
 							} catch (error) {
-								console.log('Failed to add product: ', error);
+								console.log("Failed to add product: ", error);
 							}
 						}}
 					>
@@ -204,24 +223,24 @@ const EditProduct = ({ fetchProduct, product }) => {
 							<Form>
 								<Box>
 									<Typography
-										color='textPrimary'
-										variant='h6'
+										color="textPrimary"
+										variant="h6"
 										className={classes.title}
 									>
 										Chỉnh sửa sản phẩm {product.name}
 									</Typography>
 								</Box>
 								<Field
-									label='Tên'
-									margin='normal'
-									name='name'
+									label="Tên"
+									margin="normal"
+									name="name"
 									component={TextInput}
 									fullWidth
-									variant='outlined'
+									variant="outlined"
 									className={classes.field}
 								/>
 								<Field
-									name='categoryId'
+									name="categoryId"
 									options={categories.map(category => {
 										return {
 											key: category.id,
@@ -230,39 +249,39 @@ const EditProduct = ({ fetchProduct, product }) => {
 									})}
 									component={SelectInput}
 									fullWidth
-									label='Danh mục'
+									label="Danh mục"
 									className={classes.field}
 									// variant="outlined"
 								/>
 								<Field
-									label='Số lượng'
-									margin='normal'
-									name='quantity'
+									label="Số lượng"
+									margin="normal"
+									name="quantity"
 									component={TextInput}
 									fullWidth
-									type='number'
-									variant='outlined'
+									type="number"
+									variant="outlined"
 									className={classes.field}
 								/>
 								<Field
-									label='Giá'
-									margin='normal'
-									name='price'
+									label="Giá"
+									margin="normal"
+									name="price"
 									component={TextInput}
 									fullWidth
-									type='number'
-									variant='outlined'
+									type="number"
+									variant="outlined"
 									className={classes.field}
 								/>
 								<Field
-									label='Mô tả'
-									margin='normal'
-									name='description'
+									label="Mô tả"
+									margin="normal"
+									name="description"
 									component={TextInput}
 									fullWidth
 									multiline
 									rows={5}
-									variant='outlined'
+									variant="outlined"
 									className={classes.field}
 								/>
 								<UploadProduct
@@ -271,15 +290,16 @@ const EditProduct = ({ fetchProduct, product }) => {
 									handleChange={handleChange}
 									handlePreview={handlePreview}
 									beforeUpload={beforeUpload}
+									handleRemove={handleRemove}
 								/>
 								<Box my={2}>
 									<Button
-										color='primary'
+										color="primary"
 										disabled={isSubmitting}
 										fullWidth
-										size='large'
-										type='submit'
-										variant='contained'
+										size="large"
+										type="submit"
+										variant="contained"
 										className={classes.button}
 									>
 										Chỉnh sửa

@@ -5,12 +5,14 @@ const transactionAPI = {
 		const url = "/transactions";
 		return apiClient.get(url);
 	},
-	add: ({ userId, orderId, amount }) => {
+	add: ({ userId, orderId, payoutId, amount, status }) => {
 		const url = "/transactions";
 		return apiClient.post(url, {
 			userId,
 			orderId,
-			amount
+			payoutId,
+			amount,
+			status
 		});
 	}
 };

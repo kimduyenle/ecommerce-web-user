@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
 	Avatar,
 	Accordion,
@@ -18,6 +18,11 @@ import orderAPI from "api/order";
 import useNotification from "utils/hooks/notification";
 import transactionAPI from "api/transaction";
 import payoutAPI from "api/payout";
+import orderHistoryAPI from "api/orderHistory";
+import "antd/dist/antd.css";
+import { Steps } from "antd";
+
+const { Step } = Steps;
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -72,6 +77,8 @@ const useStyles = makeStyles(theme => ({
 
 const MyOrder = ({ orders, fetchOrder }) => {
 	const classes = useStyles();
+	const [isOpen, setOpen] = React.useState(false);
+	const [note, setNote] = React.useState("");
 	const [expanded, setExpanded] = React.useState(false);
 	const { showError, showSuccess } = useNotification();
 	const handleChange = panel => (event, isExpanded) => {
@@ -80,12 +87,54 @@ const MyOrder = ({ orders, fetchOrder }) => {
 
 	const createTransaction = async transaction => {
 		try {
+			// const response = await payoutAPI.payout({ amount: transaction.amount });
+			// console.log({ response });
+			// transaction.payoutId = response.data;
 			await transactionAPI.add(transaction);
-			await payoutAPI.payout({ amount: transaction.amount });
 		} catch (error) {
 			console.log("Failed to create transaction: ", error);
 		}
 	};
+
+	const isReturn = order => {
+		const now = new Date();
+		const inOrder = new Date(order.updatedAt);
+		if (now.getTime() - inOrder.getTime() > 259200000) {
+			return false;
+		}
+		return true;
+	};
+
+	useEffect(() => {
+		const autoDestroy = async order => {
+			try {
+				const statusId = 6;
+				const response = await orderAPI.editStatus(
+					{
+						statusId
+					},
+					order.id
+				);
+				await orderHistoryAPI.add({
+					orderId: order.id,
+					name: "Đơn hàng đã bị hủy",
+					note: null
+				});
+				fetchOrder();
+			} catch (error) {
+				showError("Không thành công");
+			}
+		};
+		for (let i of orders) {
+			const now = new Date();
+			const onCheckout = new Date(i.updatedAt);
+			if (i.statusId === 7 && now.getTime() - onCheckout.getTime() > 86400000) {
+				autoDestroy(i);
+			}
+		}
+	});
+
+	console.log({ note });
 
 	return (
 		<div className={classes.root}>
@@ -108,10 +157,10 @@ const MyOrder = ({ orders, fetchOrder }) => {
 							<Avatar
 								alt=""
 								className={classes.avatar}
-								src={order.orderDetails[0].product.user.avatar}
+								src={order.orderDetails[0]?.product.user.avatar}
 							/>
 							<Typography className={classes.username}>
-								{order.orderDetails[0].product.user.username}
+								{order.orderDetails[0]?.product.user.username}
 							</Typography>
 							<Typography className={classes.quantity}>
 								{order.orderDetails.length} sản phẩm
@@ -132,6 +181,22 @@ const MyOrder = ({ orders, fetchOrder }) => {
 											orderStatus={order.statusId}
 										/>
 									))}
+									<Steps progressDot current={0} direction="vertical">
+										{order.orderHistories
+											.sort((a, b) => {
+												return (
+													new Date(b.createdAt).getTime() -
+													new Date(a.createdAt).getTime()
+												);
+											})
+											.map((history, index) => (
+												<Step
+													key={index}
+													title={history.name}
+													description={formatDate(history.createdAt)}
+												/>
+											))}
+									</Steps>
 								</div>
 								<div className="col-lg-6 col-md-12 detail">
 									<Typography className={classes.total}>
@@ -185,14 +250,25 @@ const MyOrder = ({ orders, fetchOrder }) => {
 															},
 															order.id
 														);
-														await fetchOrder();
+														await orderHistoryAPI.add({
+															orderId: order.id,
+															name: "Đơn hàng đã bị hủy"
+														});
+														fetchOrder();
 														if (order.paymentMethod === "Paypal") {
-															createTransaction({
-																userId: order.userId,
-																orderId: order.id,
+															const response = await payoutAPI.payout({
 																amount:
 																	calTotal(order.orderDetails) +
 																	order.transportation.cost
+															});
+															createTransaction({
+																userId: order.userId,
+																orderId: order.id,
+																payoutId: response.data,
+																amount:
+																	calTotal(order.orderDetails) +
+																	order.transportation.cost,
+																status: "Đang xử lý"
 															});
 														}
 														showSuccess("Đã hủy đơn hàng");
@@ -203,6 +279,106 @@ const MyOrder = ({ orders, fetchOrder }) => {
 											>
 												Hủy đơn hàng
 											</button>
+										</>
+									)}
+									{order.statusId === 4 && isReturn(order) && (
+										<>
+											<Divider className={classes.line} />
+											{!isOpen && (
+												<button
+													className="order-action"
+													onClick={() => setOpen(true)}
+													// onClick={async () => {
+													// 	console.log("statusId: ", order.statusId);
+													// 	try {
+													// 		const statusId = 8;
+													// 		const response = await orderAPI.editStatus(
+													// 			{
+													// 				statusId
+													// 			},
+													// 			order.id
+													// 		);
+													// 		await orderHistoryAPI.add({
+													// 			orderId: order.id,
+													// 			name: "Đơn hàng đã bị hủy"
+													// 		});
+													// 		fetchOrder();
+													// 		if (order.paymentMethod === "Paypal") {
+													// 			const response = await payoutAPI.payout({
+													// 				amount:
+													// 					calTotal(order.orderDetails) +
+													// 					order.transportation.cost
+													// 			});
+													// 			createTransaction({
+													// 				userId: order.userId,
+													// 				orderId: order.id,
+													// 				payoutId: response.data,
+													// 				amount:
+													// 					calTotal(order.orderDetails) +
+													// 					order.transportation.cost,
+													// 				status: "Đang xử lý"
+													// 			});
+													// 		}
+													// 		showSuccess("Đã hủy đơn hàng");
+													// 	} catch (error) {
+													// 		showError("Không thành công");
+													// 	}
+													// }}
+												>
+													Trả hàng
+												</button>
+											)}
+											{isOpen && (
+												<>
+													<textarea
+														rows={5}
+														placeholder="Nhập lý do"
+														onChange={e => setNote(e.target.value)}
+													/>
+													<button
+														className="order-action"
+														onClick={async () => {
+															console.log("statusId: ", order.statusId);
+															try {
+																const statusId = 11;
+																const response = await orderAPI.editStatus(
+																	{
+																		statusId
+																	},
+																	order.id
+																);
+																await orderHistoryAPI.add({
+																	orderId: order.id,
+																	name: "Chờ xử lý trả hàng",
+																	note: note
+																});
+																fetchOrder();
+																// if (order.paymentMethod === "Paypal") {
+																// 	const response = await payoutAPI.payout({
+																// 		amount:
+																// 			calTotal(order.orderDetails) +
+																// 			order.transportation.cost
+																// 	});
+																// 	createTransaction({
+																// 		userId: order.userId,
+																// 		orderId: order.id,
+																// 		payoutId: response.data,
+																// 		amount:
+																// 			calTotal(order.orderDetails) +
+																// 			order.transportation.cost,
+																// 		status: "Đang xử lý"
+																// 	});
+																// }
+																showSuccess("Đã gửi yêu cầu trả hàng");
+															} catch (error) {
+																showError("Không thành công");
+															}
+														}}
+													>
+														Gửi
+													</button>
+												</>
+											)}
 										</>
 									)}
 								</div>

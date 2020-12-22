@@ -81,7 +81,10 @@ const MyProduct = ({ product, handleDeleteProduct, toggleEditProduct }) => {
 				<Card className={classes.root}>
 					<img
 						className={classes.cover}
-						src={product.images.length > 0 && product.images[0].path}
+						src={
+							product.images.length > 0 &&
+							product.images.filter(i => !i.isDeleted)[0].path
+						}
 						// title="Live from space album cover"
 					/>
 					<div className={classes.details}>

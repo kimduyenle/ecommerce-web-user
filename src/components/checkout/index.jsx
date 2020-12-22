@@ -11,11 +11,22 @@ import orderDetailAPI from "api/orderDetail";
 import useNotification from "utils/hooks/notification";
 import { provinceData, districtData } from "utils/province";
 import cartDetailAPI from "api/cartDetail";
-import { deleteCartDetail } from "features/cartSlice";
+import { Modal } from "antd";
+import { deleteCartDetail, editCartDetail } from "features/cartSlice";
 
 import "antd/dist/antd.css";
 import { Select } from "antd";
+import orderHistoryAPI from "api/orderHistory";
 const { Option } = Select;
+
+const error = (title, content, ok, onOk) => {
+	Modal.error({
+		title: title,
+		content: content,
+		okText: ok,
+		onOk: onOk
+	});
+};
 
 const Checkout = ({ cartDetails = [], trans = [], productsByOwner }) => {
 	const { user } = useSelector(state => state.user);
@@ -29,6 +40,7 @@ const Checkout = ({ cartDetails = [], trans = [], productsByOwner }) => {
 	const [secondCity, setSecondCity] = React.useState(
 		districtData[provinceData[0]][0]
 	);
+	const [reload, setReload] = useState(false);
 
 	const handleProvinceChange = value => {
 		setProvince(value);
@@ -77,6 +89,32 @@ const Checkout = ({ cartDetails = [], trans = [], productsByOwner }) => {
 						{ setSubmitting }
 					) => {
 						try {
+							for (const detailObj of productsByOwner) {
+								for (const i of detailObj.data) {
+									if (i.quantity > i.product.quantity) {
+										error(
+											"Lỗi",
+											`Bạn chỉ có thể mua tối đa ${i.product.quantity} sản phẩm`,
+											"Đồng ý",
+											() => {
+												// dispatch(
+												// 	editCartDetail({
+												// 		productId: i.productId,
+												// 		cartId: i.cartId,
+												// 		quantity: i.product.quantity
+												// 	})
+												// );
+												i.quantity = i.product.quantity;
+											}
+										);
+										setReload(true);
+										return;
+									}
+								}
+							}
+
+							setReload(false);
+
 							let statusId;
 							if (paymentMethod === "Thanh toán khi nhận hàng") {
 								statusId = 1;
@@ -100,7 +138,12 @@ const Checkout = ({ cartDetails = [], trans = [], productsByOwner }) => {
 								});
 								const orderId = await response.data.id;
 								orderIds.push(orderId);
+								await orderHistoryAPI.add({
+									orderId: orderId,
+									name: "Đặt hàng thành công"
+								});
 								for (const detail of detailObj.data) {
+									console.log({ detail });
 									const result = await orderDetailAPI.add({
 										productId: detail.productId,
 										orderId,
@@ -220,7 +263,7 @@ const Checkout = ({ cartDetails = [], trans = [], productsByOwner }) => {
 												/>
 											</div>
 											<hr className="mb-4" />
-											<div className="custom-control custom-checkbox">
+											{/* <div className="custom-control custom-checkbox">
 												<input
 													type="checkbox"
 													className="custom-control-input"
@@ -233,7 +276,7 @@ const Checkout = ({ cartDetails = [], trans = [], productsByOwner }) => {
 													Lưu thông tin địa chỉ cho lần sau
 												</label>
 											</div>
-											<hr className="mb-4" />
+											<hr className="mb-4" /> */}
 											<div className="shipping-method-box">
 												<div className="title-left">
 													<h3>Phương thức vận chuyển</h3>

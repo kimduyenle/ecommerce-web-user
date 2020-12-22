@@ -13,6 +13,7 @@ import userAPI from "api/user";
 import useNotification from "utils/hooks/notification";
 import ChangePassword from "components/profileInfo/changePassword";
 import MyWallet from "components/profileInfo/myWallet";
+import Statistics from "components/profileInfo/statistics";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -72,6 +73,7 @@ const ProfileContent = () => {
 									Ví của tôi{" "}
 									<span style={{ float: "right" }}>${user.wallet}</span>
 								</Menu.Item>
+								<Menu.Item key="4">Thống kê</Menu.Item>
 							</Menu>
 						</Grid>
 						{selectedMenuItem === 1 && (
@@ -98,6 +100,12 @@ const ProfileContent = () => {
 									wallet={user.wallet}
 									transactions={user.transactions}
 								/>
+							</Grid>
+						)}
+						{selectedMenuItem === 4 && (
+							<Grid item md={9} xs={9}>
+								{/* <ChangePassword userId={user.id} /> */}
+								<Statistics />
 							</Grid>
 						)}
 					</Grid>

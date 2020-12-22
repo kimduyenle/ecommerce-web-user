@@ -16,11 +16,17 @@ import calTotal from "utils/calTotal";
 import formatDate from "utils/formatDate";
 import orderAPI from "api/order";
 import useNotification from "utils/hooks/notification";
+import orderHistoryAPI from "api/orderHistory";
+import "antd/dist/antd.css";
+import { Steps } from "antd";
+
+const { Step } = Steps;
 
 const useStyles = makeStyles(theme => ({
 	root: {
 		width: "100%"
 	},
+
 	summary: {
 		display: "flex",
 		alignItems: "center"
@@ -65,6 +71,9 @@ const useStyles = makeStyles(theme => ({
 		fontSize: theme.typography.pxToRem(15),
 		color: theme.palette.text.secondary,
 		marginLeft: 60
+	},
+	accor: {
+		color: "white"
 	}
 }));
 
@@ -84,6 +93,7 @@ const Order = ({ orders, fetchOrder }) => {
 					expanded={expanded === `panel${index + 1}`}
 					onChange={handleChange(`panel${index + 1}`)}
 					key={index}
+					className={classes.accor}
 				>
 					<AccordionSummary
 						expandIcon={<ExpandMoreIcon />}
@@ -118,6 +128,22 @@ const Order = ({ orders, fetchOrder }) => {
 									{order.orderDetails.map((detail, index) => (
 										<OrderDetail key={index} orderDetail={detail} />
 									))}
+									<Steps progressDot current={0} direction="vertical">
+										{order.orderHistories
+											.sort((a, b) => {
+												return (
+													new Date(b.createdAt).getTime() -
+													new Date(a.createdAt).getTime()
+												);
+											})
+											.map((history, index) => (
+												<Step
+													key={index}
+													title={history.name}
+													description={formatDate(history.createdAt)}
+												/>
+											))}
+									</Steps>
 								</div>
 								<div className="col-lg-6 col-md-12 detail">
 									<Typography className={classes.total}>
@@ -171,7 +197,11 @@ const Order = ({ orders, fetchOrder }) => {
 															},
 															order.id
 														);
-														await fetchOrder();
+														await orderHistoryAPI.add({
+															orderId: order.id,
+															name: "Đơn hàng đã được xác nhận"
+														});
+														fetchOrder();
 														showSuccess("Đã xác nhận đơn hàng");
 													} catch (error) {
 														showError("Không thành công");
@@ -192,7 +222,11 @@ const Order = ({ orders, fetchOrder }) => {
 															},
 															order.id
 														);
-														await fetchOrder();
+														await orderHistoryAPI.add({
+															orderId: order.id,
+															name: "Đơn hàng bị từ chối"
+														});
+														fetchOrder();
 														showSuccess("Đã từ chối đơn hàng");
 													} catch (error) {
 														showError("Không thành công");

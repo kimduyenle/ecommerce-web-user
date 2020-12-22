@@ -138,6 +138,11 @@ const CategoryDetailContent = () => {
 										placeholder="Tìm kiếm"
 										type="text"
 										ref={inputSearch}
+										onKeyPress={e => {
+											if (e.key === "Enter") {
+												setSearchStr(inputSearch.current.value);
+											}
+										}}
 									/>
 									<button
 										onClick={() => setSearchStr(inputSearch.current.value)}
@@ -168,7 +173,13 @@ const CategoryDetailContent = () => {
 												>
 													{category.name}{" "}
 													<small className="text-muted">
-														({category.products.length})
+														(
+														{
+															category.products.filter(
+																p => p.quantity > 0 && !p.isDeleted
+															).length
+														}
+														)
 													</small>
 												</button>
 											</div>
@@ -246,7 +257,7 @@ const CategoryDetailContent = () => {
 													<i className="fa fa-th"></i>{" "}
 												</a>
 											</li>
-											<li>
+											{/* <li>
 												<a
 													className="nav-link"
 													href="#list-view"
@@ -255,7 +266,7 @@ const CategoryDetailContent = () => {
 													{" "}
 													<i className="fa fa-list-ul"></i>{" "}
 												</a>
-											</li>
+											</li> */}
 										</ul>
 									</div>
 								</div>
@@ -279,9 +290,8 @@ const CategoryDetailContent = () => {
 																name={product.name}
 																price={product.price}
 																image={
-																	product.images.length > 0
-																		? product.images[0].path
-																		: "https://picsum.photos/400"
+																	product.images.filter(i => !i.isDeleted)[0]
+																		.path
 																}
 																quantity={product.quantity}
 																cartId={cartId}
@@ -303,234 +313,6 @@ const CategoryDetailContent = () => {
 														/>
 													</div>
 												)}
-											</div>
-										</div>
-										<div
-											role="tabpanel"
-											className="tab-pane fade"
-											id="list-view"
-										>
-											<div className="list-view-box">
-												<div className="row">
-													<div className="col-sm-6 col-md-6 col-lg-4 col-xl-4">
-														<div className="products-single fix">
-															<div className="box-img-hover">
-																<div className="type-lb">
-																	<p className="new">New</p>
-																</div>
-																<img src={pro1} className="img-fluid" alt="" />
-																<div className="mask-icon">
-																	<ul>
-																		<li>
-																			<a
-																				href="/"
-																				data-toggle="tooltip"
-																				data-placement="right"
-																				title="View"
-																			>
-																				<i className="fas fa-eye"></i>
-																			</a>
-																		</li>
-																		<li>
-																			<a
-																				href="/"
-																				data-toggle="tooltip"
-																				data-placement="right"
-																				title="Compare"
-																			>
-																				<i className="fas fa-sync-alt"></i>
-																			</a>
-																		</li>
-																		<li>
-																			<a
-																				href="/"
-																				data-toggle="tooltip"
-																				data-placement="right"
-																				title="Add to Wishlist"
-																			>
-																				<i className="far fa-heart"></i>
-																			</a>
-																		</li>
-																	</ul>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div className="col-sm-6 col-md-6 col-lg-8 col-xl-8">
-														<div className="why-text full-width">
-															<h4>Lorem ipsum dolor sit amet</h4>
-															<h5>
-																{" "}
-																<del>$ 60.00</del> $40.79
-															</h5>
-															<p>
-																Integer tincidunt aliquet nibh vitae dictum. In
-																turpis sapien, imperdiet quis magna nec, iaculis
-																ultrices ante. Integer vitae suscipit nisi.
-																Morbi dignissim risus sit amet orci porta, eget
-																aliquam purus sollicitudin. Cras eu metus felis.
-																Sed arcu arcu, sagittis in blandit eu, imperdiet
-																sit amet eros. Donec accumsan nisi purus, quis
-																euismod ex volutpat in. Vestibulum eleifend eros
-																ac lobortis aliquet. Suspendisse at ipsum vel
-																lacus vehicula blandit et sollicitudin quam.
-																Praesent vulputate semper libero pulvinar
-																consequat. Etiam ut placerat lectus.
-															</p>
-															<a className="btn hvr-hover" href="/">
-																Add to Cart
-															</a>
-														</div>
-													</div>
-												</div>
-											</div>
-											<div className="list-view-box">
-												<div className="row">
-													<div className="col-sm-6 col-md-6 col-lg-4 col-xl-4">
-														<div className="products-single fix">
-															<div className="box-img-hover">
-																<div className="type-lb">
-																	<p className="sale">Sale</p>
-																</div>
-																<img src={pro2} className="img-fluid" alt="" />
-																<div className="mask-icon">
-																	<ul>
-																		<li>
-																			<a
-																				href="/"
-																				data-toggle="tooltip"
-																				data-placement="right"
-																				title="View"
-																			>
-																				<i className="fas fa-eye"></i>
-																			</a>
-																		</li>
-																		<li>
-																			<a
-																				href="/"
-																				data-toggle="tooltip"
-																				data-placement="right"
-																				title="Compare"
-																			>
-																				<i className="fas fa-sync-alt"></i>
-																			</a>
-																		</li>
-																		<li>
-																			<a
-																				href="/"
-																				data-toggle="tooltip"
-																				data-placement="right"
-																				title="Add to Wishlist"
-																			>
-																				<i className="far fa-heart"></i>
-																			</a>
-																		</li>
-																	</ul>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div className="col-sm-6 col-md-6 col-lg-8 col-xl-8">
-														<div className="why-text full-width">
-															<h4>Lorem ipsum dolor sit amet</h4>
-															<h5>
-																{" "}
-																<del>$ 60.00</del> $40.79
-															</h5>
-															<p>
-																Integer tincidunt aliquet nibh vitae dictum. In
-																turpis sapien, imperdiet quis magna nec, iaculis
-																ultrices ante. Integer vitae suscipit nisi.
-																Morbi dignissim risus sit amet orci porta, eget
-																aliquam purus sollicitudin. Cras eu metus felis.
-																Sed arcu arcu, sagittis in blandit eu, imperdiet
-																sit amet eros. Donec accumsan nisi purus, quis
-																euismod ex volutpat in. Vestibulum eleifend eros
-																ac lobortis aliquet. Suspendisse at ipsum vel
-																lacus vehicula blandit et sollicitudin quam.
-																Praesent vulputate semper libero pulvinar
-																consequat. Etiam ut placerat lectus.
-															</p>
-															<a className="btn hvr-hover" href="/">
-																Add to Cart
-															</a>
-														</div>
-													</div>
-												</div>
-											</div>
-											<div className="list-view-box">
-												<div className="row">
-													<div className="col-sm-6 col-md-6 col-lg-4 col-xl-4">
-														<div className="products-single fix">
-															<div className="box-img-hover">
-																<div className="type-lb">
-																	<p className="sale">Sale</p>
-																</div>
-																<img src={pro3} className="img-fluid" alt="" />
-																<div className="mask-icon">
-																	<ul>
-																		<li>
-																			<a
-																				href="/"
-																				data-toggle="tooltip"
-																				data-placement="right"
-																				title="View"
-																			>
-																				<i className="fas fa-eye"></i>
-																			</a>
-																		</li>
-																		<li>
-																			<a
-																				href="/"
-																				data-toggle="tooltip"
-																				data-placement="right"
-																				title="Compare"
-																			>
-																				<i className="fas fa-sync-alt"></i>
-																			</a>
-																		</li>
-																		<li>
-																			<a
-																				href="/"
-																				data-toggle="tooltip"
-																				data-placement="right"
-																				title="Add to Wishlist"
-																			>
-																				<i className="far fa-heart"></i>
-																			</a>
-																		</li>
-																	</ul>
-																</div>
-															</div>
-														</div>
-													</div>
-													<div className="col-sm-6 col-md-6 col-lg-8 col-xl-8">
-														<div className="why-text full-width">
-															<h4>Lorem ipsum dolor sit amet</h4>
-															<h5>
-																{" "}
-																<del>$ 60.00</del> $40.79
-															</h5>
-															<p>
-																Integer tincidunt aliquet nibh vitae dictum. In
-																turpis sapien, imperdiet quis magna nec, iaculis
-																ultrices ante. Integer vitae suscipit nisi.
-																Morbi dignissim risus sit amet orci porta, eget
-																aliquam purus sollicitudin. Cras eu metus felis.
-																Sed arcu arcu, sagittis in blandit eu, imperdiet
-																sit amet eros. Donec accumsan nisi purus, quis
-																euismod ex volutpat in. Vestibulum eleifend eros
-																ac lobortis aliquet. Suspendisse at ipsum vel
-																lacus vehicula blandit et sollicitudin quam.
-																Praesent vulputate semper libero pulvinar
-																consequat. Etiam ut placerat lectus.
-															</p>
-															<a className="btn hvr-hover" href="/">
-																Add to Cart
-															</a>
-														</div>
-													</div>
-												</div>
 											</div>
 										</div>
 									</div>

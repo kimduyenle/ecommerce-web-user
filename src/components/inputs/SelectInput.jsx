@@ -1,27 +1,27 @@
-import React from 'react';
+import React from "react";
 import {
 	Select,
 	MenuItem,
 	FormControl,
 	InputLabel,
 	makeStyles
-} from '@material-ui/core';
+} from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
 	formControl: {
 		marginTop: theme.spacing(2),
 		marginBottom: theme.spacing(1),
-		width: '100%'
+		width: "100%"
 	},
 	label: {
-		background: '#fff',
-		padding: '0 6px',
+		background: "#fff",
+		padding: "0 6px",
 		fontSize: 15,
-		fontFamily: 'Montserrat'
+		fontFamily: "Montserrat"
 	},
 	item: {
 		fontSize: 15,
-		fontFamily: 'Montserrat'
+		fontFamily: "Montserrat"
 	}
 }));
 
@@ -29,7 +29,11 @@ const SelectInput = ({ field = {}, form = {}, ...props }) => {
 	const { options = [], id, label, ...restProps } = props;
 	const classes = useStyles();
 	return (
-		<FormControl className={classes.formControl} variant='outlined'>
+		<FormControl
+			className={classes.formControl}
+			variant="outlined"
+			size="small"
+		>
 			<InputLabel id={id} className={classes.label}>
 				{label}
 			</InputLabel>

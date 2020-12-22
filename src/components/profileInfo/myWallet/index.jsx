@@ -27,30 +27,6 @@ const columns = [
 	}
 ];
 
-// const data = [
-// 	{
-// 		key: '1',
-// 		order: '9',
-// 		amount: 20,
-// 		date: '09/12/2020 15:40:32',
-// 		status: 'Thành công'
-// 	},
-// 	{
-// 		key: '2',
-// 		order: '12',
-// 		amount: 12,
-// 		date: '09/12/2020 15:40:32',
-// 		status: 'Thành công'
-// 	},
-// 	{
-// 		key: '3',
-// 		order: '5',
-// 		amount: 10,
-// 		date: '09/12/2020 15:40:32',
-// 		status: 'Đang xử lý'
-// 	}
-// ];
-
 const MyWallet = ({ wallet, transactions = [] }) => {
 	const data = transactions.map((transaction, index) => {
 		return {

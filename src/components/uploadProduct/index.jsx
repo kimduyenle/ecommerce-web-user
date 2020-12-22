@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import 'antd/dist/antd.css';
-import { Upload, Modal } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import React, { useState } from "react";
+import "antd/dist/antd.css";
+import { Upload, Modal } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 const UploadProduct = ({
 	uploadData,
 	handleCancel,
 	handleChange,
 	handlePreview,
-	beforeUpload
+	beforeUpload,
+	handleRemove
 }) => {
 	const uploadButton = (
 		<div>
@@ -19,12 +20,13 @@ const UploadProduct = ({
 	return (
 		<>
 			<Upload
-				listType='picture-card'
+				listType="picture-card"
 				fileList={uploadData.fileList}
 				onPreview={handlePreview}
 				onChange={handleChange}
 				multiple
 				beforeUpload={beforeUpload}
+				onRemove={handleRemove}
 			>
 				{uploadData.fileList.length >= 8 ? null : uploadButton}
 			</Upload>
@@ -35,8 +37,8 @@ const UploadProduct = ({
 				onCancel={handleCancel}
 			>
 				<img
-					alt='example'
-					style={{ width: '100%' }}
+					alt="example"
+					style={{ width: "100%" }}
 					src={uploadData.previewImage}
 				/>
 			</Modal>

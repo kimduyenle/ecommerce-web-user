@@ -42,11 +42,11 @@ const ProductDetailContent = () => {
 				name: fetchedProduct.name,
 				price: fetchedProduct.price,
 				description: fetchedProduct.description,
-				images: fetchedProduct.images,
+				images: fetchedProduct.images.filter(image => !image.isDeleted),
 				user: fetchedProduct.user,
 				category: fetchedProduct.category.name,
 				avaQuantity: fetchedProduct.quantity,
-				sold: fetchedProduct.orderDetails.length
+				sold: fetchedProduct.sold
 			});
 		} catch (error) {
 			console.log("Failed to fetch product: ", error);
